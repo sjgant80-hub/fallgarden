@@ -1,0 +1,13 @@
+{
+  "name": "FallGarden · second brain",
+  "short_name": "FallGarden",
+  "description": "Sovereign Obsidian-shape second brain. Markdown + wikilinks + backlinks + graph + fall-kit semantic search.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#1a1a1e",
+  "theme_color": "#7a9c7e",
+  "icons": [
+    { "src": "data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><rect width=%22128%22 height=%22128%22 fill=%22%231a1a1e%22/><text x=%2264%22 y=%2288%22 font-size=%2290%22 text-anchor=%22middle%22 fill=%22%237a9c7e%22 font-family=%22serif%22>%E2%97%8A</text></svg>", "sizes": "128x128", "type": "image/svg+xml" }
+  ]
+}
