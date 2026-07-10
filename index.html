@@ -329,8 +329,7 @@ const G = {
   tagFilter: null,
   idb: null,
   fk: null,
-  fkFallback: !!window.__fkFail,
-};
+  fkFallback: !!window.__fkFail};
 
 const $ = id => document.getElementById(id);
 const el = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
@@ -485,16 +484,16 @@ function md(src, filesSet){
       return `<span class="wikilink${broken}" data-link="${esc(key)}">${esc(disp)}</span>`;
     });
     // tag
-    t = t.replace(/(^|\s)#([a-zA-Z0-9_/-]+)/g,'$1<span class="tag" data-tag="$2">#$2</span>');
+    t = t.replace(/(^|\s)#([a-zA-Z0-9_/-]+)/g,'TBA<span class="tag" data-tag="TBA">#TBA</span>');
     // bold/italic
-    t = t.replace(/\*\*([^\*]+)\*\*/g,'<strong>$1</strong>');
-    t = t.replace(/\*([^\*]+)\*/g,'<em>$1</em>');
-    t = t.replace(/__([^_]+)__/g,'<strong>$1</strong>');
-    t = t.replace(/(^|[^\w])_([^_]+)_/g,'$1<em>$2</em>');
+    t = t.replace(/\*\*([^\*]+)\*\*/g,'<strong>TBA</strong>');
+    t = t.replace(/\*([^\*]+)\*/g,'<em>TBA</em>');
+    t = t.replace(/__([^_]+)__/g,'<strong>TBA</strong>');
+    t = t.replace(/(^|[^\w])_([^_]+)_/g,'TBA<em>TBA</em>');
     // strikethrough
-    t = t.replace(/~~([^~]+)~~/g,'<del>$1</del>');
+    t = t.replace(/~~([^~]+)~~/g,'<del>TBA</del>');
     // markdown link (plain)
-    t = t.replace(/\[([^\]]+)\]\(([^)]+)\)/g,'<a href="$2" target="_blank" rel="noopener">$1</a>');
+    t = t.replace(/\[([^\]]+)\]\(([^)]+)\)/g,'<a href="TBA" target="_blank" rel="noopener">TBA</a>');
     // task
     t = t.replace(/^\[( |x|X)\]\s*/, m=>`<input type="checkbox" disabled${/x/i.test(m)?' checked':''}>`);
     return t;
@@ -954,7 +953,7 @@ function renderMinimap(){
 function buildIndex(){
   const idx = new Map();
   for(const [p,f] of G.files){
-    const words = (f.body.toLowerCase().match(/[a-z0-9_-]{2,}/g)||[]);
+    const words = (f.body.toLowerCase().match(/[a-z0-9_-]{2}/g)||[]);
     for(const w of words){
       if (!idx.has(w)) idx.set(w,new Set());
       idx.get(w).add(p);
@@ -995,7 +994,7 @@ async function runSearch(q){
 function runFullText(q){
   const cont = $('q-hits'); cont.innerHTML='';
   if (!searchIndex) searchIndex = buildIndex();
-  const terms = q.toLowerCase().match(/[a-z0-9_-]{2,}/g) || [q.toLowerCase()];
+  const terms = q.toLowerCase().match(/[a-z0-9_-]{2}/g) || [q.toLowerCase()];
   const scores = new Map();
   for(const t of terms){
     const set = searchIndex.get(t) || new Set();
@@ -1013,7 +1012,7 @@ function runFullText(q){
     for(const t of terms){ const i = lc.indexOf(t); if (i>=0 && (idx<0 || i<idx)) idx = i; }
     if (idx<0) idx = 0;
     const raw = rec.body.slice(Math.max(0,idx-40), idx+180).replace(/\n/g,' ');
-    const snip = esc(raw).replace(highlightRx,'<mark>$1</mark>');
+    const snip = esc(raw).replace(highlightRx,'<mark>TBA</mark>');
     const d = el('div','hit');
     d.innerHTML = `<div class="path">${esc(p)}</div><div class="snip">…${snip}…</div>`;
     d.onclick = () => { openFile(p); switchPane('editor'); };
@@ -1086,8 +1085,7 @@ function buildPalette(q){
     ['action','Insert Wikilink at cursor',()=>{closePalette();insertText('[[]]',2);}],
     ['action','Sign this note (FallSignature)',()=>{closePalette();signCurrent();}],
     ['action','Publish this note (FallCast)',()=>{closePalette();publishCurrent();}],
-    ['action','Semantic ask (fall-kit)',()=>{closePalette();switchPane('search');document.querySelector('input[name=qm][value=semantic]').checked=true;$('q').focus();}],
-  ];
+    ['action','Semantic ask (fall-kit)',()=>{closePalette();switchPane('search');document.querySelector('input[name=qm][value=semantic]').checked=true;$('q').focus();}]];
   for(const [k,l,fn] of cmds){ if (!q || l.toLowerCase().includes(q.toLowerCase())) rows.push({kind:k,label:l,fn}); }
   // files
   for(const p of G.files.keys()){
@@ -1221,7 +1219,7 @@ function boot(){
   window.fallgarden = {
     query: (text) => {
       const idx = buildIndex();
-      const terms = text.toLowerCase().match(/[a-z0-9_-]{2,}/g)||[text.toLowerCase()];
+      const terms = text.toLowerCase().match(/[a-z0-9_-]{2}/g)||[text.toLowerCase()];
       const scores = new Map();
       for(const t of terms){ const s = idx.get(t)||new Set(); for(const p of s) scores.set(p,(scores.get(p)||0)+1); }
       return [...scores.entries()].sort((a,b)=>b[1]-a[1]).slice(0,20).map(([p,s])=>({path:p,score:s,body:G.files.get(p).body.slice(0,400)}));
