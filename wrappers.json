@@ -1,0 +1,6 @@
+{
+  "resolveNote": "function resolveNote(key){ return window.GARDEN.resolveNote(G.files, key); }",
+  "hasNote": "function hasNote(filesSet, key){ return window.GARDEN.hasNote(filesSet, key); }",
+  "buildIndex": "function buildIndex(){ return window.GARDEN.buildIndex(G.files); }",
+  "buildGraphData": "function buildGraphData(includeTags=true){ return window.GARDEN.buildGraphData(G.files, includeTags); }"
+}
