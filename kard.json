@@ -1,0 +1,29 @@
+{
+  "kind": "kard.v1",
+  "name": "fallgarden",
+  "title": "FallGarden",
+  "retires": "a linked-notes app (Obsidian-style)",
+  "category": "Office, notes and design",
+  "license": "MIT",
+  "live": "https://sjgant80-hub.github.io/fallgarden/",
+  "repo": "https://github.com/sjgant80-hub/fallgarden",
+  "studs": {
+    "brain": {
+      "how": "linked",
+      "version": null
+    },
+    "mesh": {
+      "device": true,
+      "peer": false
+    },
+    "memory": {
+      "indexeddb": true,
+      "localstorage": true
+    },
+    "proof": {
+      "workflows": 2,
+      "tests": 1
+    }
+  },
+  "fits": true
+}
