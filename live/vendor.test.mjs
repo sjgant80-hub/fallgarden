@@ -31,14 +31,11 @@ test('the page has no video, and carries the banner and the receipts it claims',
   assert.match(app, /\$\('banner'\)\.style\.display = view === 'build' \? 'block' : 'none';/, 'G6: the banner shows whenever Your build is open');
   assert.match(html, /connect-src 'self'/, 'the page talks to nothing but itself');
 });
-test('P2: nothing private lives in this public repo, and the private tab is hidden until this machine\'s own server answers', () => {
+test('P2: nothing private lives in this public repo, and the public page has no private hook (the private live view lives in a private repo of its own)', () => {
   const html = readFileSync(new URL('live/index.html', root), 'utf8');
   const app = readFileSync(new URL('live/app.mjs', root), 'utf8');
-  assert.match(html, /<button id="v-private" aria-pressed="false" hidden /, 'the tab is hidden by default');
-  assert.match(app, /\$\('v-private'\)\.hidden = !S\.private;/);
-  assert.match(app, /S\.private = !!\(j && j\.ok === true && j\.server === 'garden-live'\)/, 'only the local garden-live server can reveal it');
-  assert.equal((app.match(/fetch\('\.\/private\//g) || []).length, 4, 'private data is only ever fetched by relative path (hello, the snapshot, the events, the poll), from whatever served this page');
-  assert.equal(/https?:\/\/[^'"]*private/.test(app), false, 'never from an absolute address');
+  assert.equal(/v-private|\.\/private\/|\.\/api\/|garden-live|127\.0\.0\.1|localhost/.test(html + app), false, 'no private tab, no private route, no local server');
+  assert.deepEqual([...app.matchAll(/fetch\('([^']+)'/g)].map((m) => m[1]), ['./data/estate.json', './receipts.json', './data/sample-process.json', './vendor/basis.json'], 'the page fetches only its own public files');
   const snap = JSON.parse(readFileSync(new URL('live/data/estate.json', root), 'utf8'));
   assert.equal(snap.repos.some((r) => r.private === true), false, 'the public snapshot holds no private repo');
   assert.equal(readdirSync(new URL('live/', root)).includes('private'), false, 'no private folder in the repo');

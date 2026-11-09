@@ -14,7 +14,6 @@ const qs = new URLSearchParams(location.search);
 const VIEWS = {
   estate: { title: 'A company growing itself, and every node is real.', caption: 'My estate, replayed from its public records: every repo a node, every coupling an edge, every CI result and receipt as it happened. Same records, same hash, every run. Press play, or drag the timeline.', speed: 90 },
   grow: { title: 'The Living Company', caption: 'A virtual company growing from one seed. Same seed, same company, every run. Every node is a real build. Re-run it. fall-core germinates, the organs bud from the estate’s real layers, and each night the library grows through the real gate: a rule stays only if it beats a baseline on cases it never saw. Each part is proven on Liveware.', speed: 60 },
-  private: { title: 'Your estate, running now.', caption: 'Private, on this laptop only. Every repo (the private ones too), CI as it changes, Kar\u2019s night as each organ runs, the pattern library, which model Kar routes to, the line to Grok and every memory write. Every event names the record it came from; click a line below to see it. Nothing here is published.', speed: 400 },
   build: { title: 'Your build, simulated from your own process.', caption: 'Watch it run before you pay. Your steps become organs; your example cases go through the same gate. Every piece of it is a simulation, and says so.', speed: 24 },
 };
 
@@ -71,7 +70,7 @@ $('lines').addEventListener('click', (e) => {
   const msg = document.createElement('span');
   if (!out.ok) { msg.textContent = 'refused: ' + out.why; box.append(k, msg); return; }
   const text = td.decode(out.bytes), same = text === JSON.stringify(item.c.p);
-  msg.textContent = K.say(JSON.parse(text)) + (same ? '  ✓ exactly the message sent' : '  ✗ differs from the message sent') + (item.ev.src ? '  · source: ' + item.ev.src : '');
+  msg.textContent = K.say(JSON.parse(text)) + (same ? '  ✓ exactly the message sent' : '  ✗ differs from the message sent');
   box.append(k, msg);
 });
 
@@ -98,9 +97,7 @@ function load(events, receiptKey) {
   famFirst.clear();
   S.events = events; S.k = 0; S.acc = 0; S.state = K.emptyState(); S.stream = []; S.bytes = { json: 0, light: 0 }; S.finalHash = null; S.receiptKey = receiptKey;
   const fin = K.replay(events);
-  const room = receiptKey === 'private' ? 512 : 4;
-  S.cap = { nodes: fin.nodes.size + room, edges: fin.edges.size + room * 2 };
-  S.engine.reset(S.cap.nodes, S.cap.edges);
+  S.engine.reset(fin.nodes.size + 4, fin.edges.size + 4);
   $('scrub').max = String(events.length); $('scrub').value = '0';
   $('decoded').innerHTML = '<span class="k">decoded</span> · click any line to turn its LIGHT bytes back into the message and read it in plain words.';
   S.dirty = true; updateChips(true); renderStream(); engineNote();
@@ -131,43 +128,19 @@ function seekTo(k) {
 }
 async function setView(view) {
   S.view = view; S.playing = false; $('play').textContent = '▶ Play';
-  for (const v of ['estate', 'grow', 'build', 'private']) $('v-' + v).setAttribute('aria-pressed', String(v === view));
-  if (S.poll) { clearInterval(S.poll); S.poll = null; }
+  for (const v of ['estate', 'grow', 'build']) $('v-' + v).setAttribute('aria-pressed', String(v === view));
   $('title').textContent = VIEWS[view].title; $('caption').textContent = VIEWS[view].caption; $('speed').value = String(VIEWS[view].speed);
   $('seedbox').hidden = view !== 'grow';
   document.title = view === 'grow' ? 'The Living Company · FallGarden Live' : 'FallGarden Live · the estate, running';
-  history.replaceState(null, '', view === 'estate' ? location.pathname + '?view=estate' : '?view=' + (view === 'grow' ? 'company' : view));
+  history.replaceState(null, '', view === 'estate' ? location.pathname : '?view=' + (view === 'grow' ? 'company' : view));
   $('buildform').classList.toggle('on', view === 'build');
   $('banner').style.display = view === 'build' ? 'block' : 'none';
   $('bannertext').textContent = K.BANNER;
   S.engine.libraryId = view === 'grow' ? 'library' : view === 'build' ? 'their-library' : undefined;
   if (view === 'estate') { load(K.eventsFromEstate(S.snap), 'estate'); return; }
-  if (view === 'private') { await openPrivate(); return; }
   if (view === 'grow') { await grow(); return; }
   await simulateFromForm();
 }
-// ── the private live view: only ever from the owner's own local server (garden-live, on 127.0.0.1), never from the public site ──
-async function openPrivate() {
-  $('engine').textContent = 'reading your estate from this machine\u2026';
-  const [snap, live] = await Promise.all([fetch('./private/estate.json', { cache: 'no-store' }).then((r) => r.json()), fetch('./private/events?since=0', { cache: 'no-store' }).then((r) => r.json())]);
-  S.privateSnap = snap; S.liveTotal = live.total;
-  load([...K.eventsFromEstate(snap), ...live.events], 'private');
-  seekTo(S.events.length);
-  S.poll = setInterval(pollPrivate, 5000);
-}
-async function pollPrivate() {
-  if (S.view !== 'private') return;
-  let r;
-  try { r = await (await fetch('./private/events?since=' + S.liveTotal, { cache: 'no-store' })).json(); } catch { return; }
-  if (!r || !Array.isArray(r.events) || !r.events.length) return;
-  const atTail = S.k >= S.events.length;
-  S.events.push(...r.events); S.liveTotal = r.total;
-  $('scrub').max = String(S.events.length);
-  // live growth past the room set aside: rebuild once with more room, back at the same moment
-  if (S.state.nodes.size + r.events.length + 8 > S.cap.nodes) { const k = S.k; const evs = S.events; load(evs, 'private'); seekTo(k); }
-  if (atTail) applyUpTo(S.events.length, true);
-}
-
 async function grow() {
   const seed = Math.max(0, Math.min(4294967295, Math.floor(Number($('seed').value) || 0)));
   $('engine').textContent = 'growing from seed ' + seed + ' (the gate runs in a worker)…';
@@ -225,7 +198,6 @@ function updateChips(force) {
   const chip = $('receiptchip');
   chip.classList.remove('ok', 'bad');
   const want = receiptFor(S.receiptKey);
-  if (S.view === 'private') { $('receipt').textContent = 'private · never published'; return; }
   if (S.k < S.events.length) { $('receipt').textContent = want ? 'at the end' : S.view === 'build' ? 'your own process: no receipt' : '—'; return; }
   if (!want) { $('receipt').textContent = S.view === 'build' ? 'your own process: no receipt' : 'none for this seed'; return; }
   const ok = want === h;
@@ -338,7 +310,6 @@ function frame(now) {
   requestAnimationFrame(frame);
 }
 function wire() {
-  $('v-private').onclick = () => setView('private');
   $('v-estate').onclick = () => setView('estate'); $('v-grow').onclick = () => setView('grow'); $('v-build').onclick = () => setView('build');
   $('play').onclick = () => { if (S.k >= S.events.length) seekTo(0); S.playing = !S.playing; $('play').textContent = S.playing ? '❚❚ Pause' : '▶ Play'; };
   $('rerun').onclick = () => { seekTo(0); S.playing = true; $('play').textContent = '❚❚ Pause'; };
@@ -363,7 +334,7 @@ function wire() {
     const k = document.createElement('div'); k.className = 'k'; k.textContent = n.sim ? 'simulation · ' + n.kind : n.kind + (n.fam ? ' · ' + n.fam : '');
     const t = document.createElement('div'); t.textContent = n.label;
     const m = document.createElement('div'); m.className = 'k';
-    m.textContent = [n.run ? (n.run === 'running' ? 'running now' : 'last run ' + n.run) : '', n.ci ? 'CI ' + n.ci : '', n.stage ? 'stage ' + n.stage : '', n.receipts ? n.receipts + ' receipt' + (n.receipts > 1 ? 's' : '') : '', n.live ? 'live page' : ''].filter(Boolean).join(' · ');
+    m.textContent = [n.ci ? 'CI ' + n.ci : '', n.stage ? 'stage ' + n.stage : '', n.receipts ? n.receipts + ' receipt' + (n.receipts > 1 ? 's' : '') : '', n.live ? 'live page' : ''].filter(Boolean).join(' · ');
     tip.append(k, t, m);
     if (S.view === 'estate' && n.kind === 'repo') { const a = document.createElement('div'); a.className = 'k'; a.textContent = 'click to open github.com/sjgant80-hub/' + n.id; tip.appendChild(a); }
     tip.style.left = Math.min(r.width - 330, e.clientX - r.left + 14) + 'px'; tip.style.top = (e.clientY - r.top + 14) + 'px'; tip.style.display = 'block';
@@ -392,12 +363,9 @@ async function main() {
   fillForm(sample); fillFacts(); fillBlueprint();
   S.engine = await createEngine($('gl'), $('overlay'), { gpu: qs.get('gpu') === '0' ? false : undefined });
   window.__live = { S, K, CPU_CAP };
-  // the private tab exists only when this machine's own server answers; on the public site this request simply 404s
-  try { const hi = await fetch('./private/hello', { cache: 'no-store', signal: AbortSignal.timeout(1500) }); const j = hi.ok ? await hi.json() : null; S.private = !!(j && j.ok === true && j.server === 'garden-live'); } catch { S.private = false; }
-  $('v-private').hidden = !S.private;
   wire();
   const v = qs.get('view');
-  await setView(v === 'grow' || v === 'company' ? 'grow' : v === 'build' ? 'build' : v === 'private' && S.private ? 'private' : S.private && !v ? 'private' : 'estate');
+  await setView(v === 'grow' || v === 'company' ? 'grow' : v === 'build' ? 'build' : 'estate');
   requestAnimationFrame(frame);
 }
 main().catch((e) => { $('engine').textContent = 'the page failed to start: ' + String((e && e.message) || e); console.error(e); });
