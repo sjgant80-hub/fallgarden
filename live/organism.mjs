@@ -711,8 +711,12 @@ export async function createOrganism(canvas, overlay, opts = {}) {
     enc.copyBufferToBuffer(current(), 0, bufs.rb, 0, n * 16);
     device.queue.submit([enc.finish()]);
     const rb = bufs.rb;
-    rb.mapAsync(GPUMapMode.READ, 0, n * 16).then(() => { const a = new Float32Array(rb.getMappedRange(0, n * 16)); R.pos.set(a.subarray(0, Math.min(a.length, R.n * 4))); rb.unmap(); reading = false; }).catch(() => { reading = false; });
+    pendingRead = rb.mapAsync(GPUMapMode.READ, 0, n * 16).then(() => { const a = new Float32Array(rb.getMappedRange(0, n * 16)); R.pos.set(a.subarray(0, Math.min(a.length, R.n * 4))); rb.unmap(); reading = false; }).catch(() => { reading = false; });
   }
+  let pendingRead = null;
+  /** idle() → once the GPU has finished every frame sent and the last position read has landed: a recorder that awaits
+   *  this after each frame draws every frame from the same positions every time (Build Broadcast's B4). */
+  R.idle = async () => { await device.queue.onSubmittedWorkDone(); if (pendingRead) await pendingRead; };
   function labels(now) {
     g2.clearRect(0, 0, R.W, R.H);
     if (!R.labelsOn || !R.n) return;

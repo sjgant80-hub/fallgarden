@@ -164,6 +164,7 @@ async function makeGPU(canvas, overlay) {
   S.pointer = (x, y) => R.pointer(x, y);
   S.highlight = (ids) => { const lit = new Set((ids || []).filter((id) => S.slot.has(id))); R.setLit(lit.size ? lit : null, lit.size ? S.slot.get([...lit][0]) : -1); };
   S.toWorld = (cx, cy) => [(cx - R.W / 2) / R.cam.zoom + R.cam.x, (cy - R.H / 2) / R.cam.zoom + R.cam.y];
+  S.idle = () => R.idle();   // a recorder waits on this after each frame (every position read has landed)
   return S;
 }
 
@@ -172,6 +173,7 @@ export const CPU_CAP = 700;
 function make2D(canvas, overlay) {
   const S = base(canvas, overlay);
   S.kind = 'canvas2d';
+  S.idle = async () => {};   // the 2D canvas draws synchronously: nothing to wait for
   const g = canvas.getContext('2d');
   let nodes = [], links = [];
   S.reset = () => { S.ids = []; S.slot = new Map(); nodes = []; links = []; S.particles = []; S.pulseNode.clear(); S.pulseEdge.clear(); S.pos = new Float32Array(CPU_CAP * 4); S.cam.manual = false; S.hidden = 0; };
