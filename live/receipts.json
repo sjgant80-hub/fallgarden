@@ -54,8 +54,8 @@
   "roundtrips": 5275
  },
  "gate": {
-  "total": 100,
-  "killed": 100,
+  "total": 104,
+  "killed": 104,
   "survived": 0,
   "ignored": 0,
   "clean": true

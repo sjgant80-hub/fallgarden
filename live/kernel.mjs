@@ -15,7 +15,10 @@ export const SIM = 'simulation';
 export const BANNER = 'Simulation of how your build would run, from your described process. Not yet built.';
 export const PHYS = Object.freeze({ repel: 3000, rest: 60, spring: 0.03, center: 0.002, damp: 0.85 });
 export const NIGHTS = 6;
-export const KINDS = Object.freeze(['germinate', 'born', 'layer', 'link', 'receipt', 'ci', 'pass', 'drop', 'stage', 'flow']);
+export const KINDS = Object.freeze(['germinate', 'born', 'layer', 'link', 'receipt', 'ci', 'pass', 'drop', 'stage', 'flow', 'run']);
+// (2026-11-09, the private live view) a local organ's run: is it running now, did its last run end ok or fail. It is
+// drawn but never hashed, so every public view's receipt is unchanged by it.
+export const RUN_STATES = Object.freeze(['running', 'ok', 'failed']);
 
 const str = (x) => (typeof x === 'string' ? x : '');
 const arr = (x) => (Array.isArray(x) ? x : []);
@@ -61,7 +64,7 @@ export function apply(s, ev) {
     if (!str(e.id)) ok = false;
     else {
       if (!s.nodes.has(e.id)) s.nodes.set(e.id, { id: e.id, label: str(e.label) || e.id, kind: e.t === 'germinate' ? 'core' : e.t === 'layer' ? 'layer' : str(e.kind) || 'repo',
-        fam: str(e.fam), live: e.live === true, ci: null, stage: e.t === 'born' && e.kind === 'organ' ? STAGES[0] : null, receipts: 0, sim });
+        fam: str(e.fam), live: e.live === true, ci: null, stage: e.t === 'born' && e.kind === 'organ' ? STAGES[0] : null, receipts: 0, sim, run: null });
       for (const k of arr(e.keys)) addEdge(s, e.id, k, sim);
       if (str(e.layer)) addEdge(s, e.id, e.layer, sim);
       if (str(e.to)) addEdge(s, e.id, e.to, sim);
@@ -71,6 +74,7 @@ export function apply(s, ev) {
   else if (e.t === 'receipt') { const n = s.nodes.get(e.id); if (n) n.receipts++; else ok = false; }
   else if (e.t === 'ci') { const n = s.nodes.get(e.id); if (n) n.ci = e.ok === true ? 'green' : 'red'; else ok = false; }
   else if (e.t === 'stage') { const n = s.nodes.get(e.id); if (n && STAGES.includes(e.stage)) n.stage = e.stage; else ok = false; }
+  else if (e.t === 'run') { const n = s.nodes.get(e.id); if (n && RUN_STATES.includes(e.state)) n.run = e.state; else ok = false; }
   else if (e.t === 'pass') { if (str(e.rule)) s.library.kept.push(e.rule); else ok = false; }
   else if (e.t === 'drop') { if (str(e.rule)) s.library.dropped.push(e.rule); else ok = false; }
   else ok = false;
@@ -99,7 +103,7 @@ const RANK = Object.fromEntries(KINDS.map((k, i) => [k, i]));
 // separator  sorts below every printable character, so the key order is exactly that order)
 export function sortEvents(events) {
   const list = arr(events).filter(isObj);
-  const byKey = new Map(list.map((e, i) => [[str(e.at), String(RANK[e.t]), str(e.id || e.a || e.rule), String(i).padStart(9, '0')].join(''), e]));
+  const byKey = new Map(list.map((e, i) => [[str(e.at), String(RANK[e.t]).padStart(2, '0'), str(e.id || e.a || e.rule), String(i).padStart(9, '0')].join(''), e]));
   return [...byKey.keys()].sort().map((k) => byKey.get(k));
 }
 /** linkPairs(names, linksOf) → every coupling between two of the names once, as [a, b] with a before b, sorted. */
@@ -267,7 +271,7 @@ export function simulate(proc, seed, nights = 3) {
 export function packetOf(e) {
   if (!isObj(e) || !KINDS.includes(e.t)) return null;
   const p = { k: e.t };
-  for (const f of ['id', 'a', 'b', 'fam', 'rule', 'why', 'stage', 'receipt', 'test', 'to', 'layer']) if (str(e[f])) p[f] = e[f];
+  for (const f of ['id', 'a', 'b', 'fam', 'rule', 'why', 'stage', 'receipt', 'test', 'to', 'layer', 'state']) if (str(e[f])) p[f] = e[f];
   if (e.t === 'ci') p.ok = e.ok === true;
   if (e.sim === true) p.sim = 1;
   return p;
@@ -286,6 +290,7 @@ export function say(p) {
     pass: () => 'the gate keeps a rule: ' + p.rule,
     drop: () => 'the gate drops a rule: ' + p.rule + (p.why ? ', because ' + p.why : ''),
     stage: () => p.id + ' climbs to ' + p.stage,
+    run: () => p.id + (p.state === 'running' ? ' is running' : p.state === 'ok' ? ' ran ok' : ' failed'),
   }[p.k];
   return s ? s() + tag : '';
 }
@@ -315,5 +320,5 @@ export function layoutStep(nodes, links, W, H) {
   return ns;
 }
 
-export default { STAGES, SIM, BANNER, PHYS, NIGHTS, KINDS, hash64, mulberry32, shuffle, emptyState, edgeKey, apply, replay, hashState, sortEvents, linkPairs,
+export default { STAGES, SIM, BANNER, PHYS, NIGHTS, KINDS, RUN_STATES, hash64, mulberry32, shuffle, emptyState, edgeKey, apply, replay, hashState, sortEvents, linkPairs,
   eventsFromEstate, auditEstate, PROPOSE_K, pairsFor, nightOf, stagesFor, growFromSeed, validProcess, simulate, packetOf, say, layoutStep };

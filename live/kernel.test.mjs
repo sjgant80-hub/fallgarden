@@ -2,7 +2,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import K, { STAGES, SIM, BANNER, PHYS, NIGHTS, KINDS, hash64, mulberry32, shuffle, emptyState, edgeKey, apply, replay, hashState, sortEvents, linkPairs,
+import K, { STAGES, SIM, BANNER, PHYS, NIGHTS, KINDS, RUN_STATES, hash64, mulberry32, shuffle, emptyState, edgeKey, apply, replay, hashState, sortEvents, linkPairs,
   eventsFromEstate, auditEstate, PROPOSE_K, pairsFor, nightOf, stagesFor, growFromSeed, validProcess, simulate, packetOf, say, layoutStep } from './kernel.mjs';
 import P from './vendor/patlib.mjs';
 
@@ -26,7 +26,8 @@ test('the sealed constants', () => {
   assert.equal(BANNER, 'Simulation of how your build would run, from your described process. Not yet built.');
   assert.deepEqual(PHYS, { repel: 3000, rest: 60, spring: 0.03, center: 0.002, damp: 0.85 });
   assert.equal(NIGHTS, 6); assert.equal(PROPOSE_K, 12);
-  assert.deepEqual(KINDS, ['germinate', 'born', 'layer', 'link', 'receipt', 'ci', 'pass', 'drop', 'stage', 'flow']);
+  assert.deepEqual(KINDS, ['germinate', 'born', 'layer', 'link', 'receipt', 'ci', 'pass', 'drop', 'stage', 'flow', 'run']);
+  assert.deepEqual(RUN_STATES, ['running', 'ok', 'failed']); assert.ok(Object.isFrozen(RUN_STATES));
   assert.ok(Object.isFrozen(STAGES) && Object.isFrozen(PHYS) && Object.isFrozen(KINDS));
 });
 
@@ -71,9 +72,9 @@ test('apply: every kind of event, and the ones that are counted but never drawn'
   apply(s, { t: 'receipt', id: 'b' }); apply(s, { t: 'ci', id: 'a', ok: true }); apply(s, { t: 'ci', id: 'b', ok: 'yes' });
   apply(s, { t: 'stage', id: 'a', stage: 'assist' }); apply(s, { t: 'pass', rule: 'r1' }); apply(s, { t: 'drop', rule: 'r2' });
   assert.equal(s.applied, 13); assert.equal(s.ignored, 0);
-  assert.deepEqual(s.nodes.get('core'), { id: 'core', label: 'core', kind: 'core', fam: '', live: false, ci: null, stage: null, receipts: 0, sim: false });
-  assert.deepEqual(s.nodes.get('a'), { id: 'a', label: 'a', kind: 'organ', fam: 'x', live: true, ci: 'green', stage: 'assist', receipts: 0, sim: false });
-  assert.deepEqual(s.nodes.get('b'), { id: 'b', label: 'Bee', kind: 'repo', fam: '', live: false, ci: 'red', stage: null, receipts: 1, sim: false });
+  assert.deepEqual(s.nodes.get('core'), { id: 'core', label: 'core', kind: 'core', fam: '', live: false, ci: null, stage: null, receipts: 0, sim: false, run: null });
+  assert.deepEqual(s.nodes.get('a'), { id: 'a', label: 'a', kind: 'organ', fam: 'x', live: true, ci: 'green', stage: 'assist', receipts: 0, sim: false, run: null });
+  assert.deepEqual(s.nodes.get('b'), { id: 'b', label: 'Bee', kind: 'repo', fam: '', live: false, ci: 'red', stage: null, receipts: 1, sim: false, run: null });
   assert.equal(s.nodes.get('L').kind, 'layer'); assert.equal(s.nodes.get('L').stage, null);
   apply(s, { t: 'layer', id: 'L2', kind: 'organ' }); assert.equal(s.nodes.get('L2').stage, null, 'only a born organ starts in shadow');
   apply(s, { t: 'germinate', id: 'G2', kind: 'organ' }); assert.equal(s.nodes.get('G2').stage, null);
@@ -91,6 +92,26 @@ test('apply: every kind of event, and the ones that are counted but never drawn'
   assert.equal(s.ignored, 13); assert.equal(s.applied, 16); assert.equal(s.edges.size, before);
   assert.equal(apply(null, { t: 'pass', rule: 'x' }), null);
   assert.equal(edgeKey('b', 'a'), 'a|b'); assert.equal(edgeKey('a', 'b'), 'a|b');
+});
+
+test('run: a local organ is running, ran ok, or failed; drawn but never hashed', () => {
+  const base = [{ t: 'germinate', id: 'night' }, { t: 'born', id: 'kar-loop', kind: 'organ', to: 'night' }];
+  const s = replay([...base, { t: 'run', id: 'kar-loop', state: 'running' }]);
+  assert.equal(s.nodes.get('kar-loop').run, 'running'); assert.equal(s.ignored, 0); assert.equal(s.applied, 3);
+  apply(s, { t: 'run', id: 'kar-loop', state: 'ok' }); assert.equal(s.nodes.get('kar-loop').run, 'ok');
+  apply(s, { t: 'run', id: 'kar-loop', state: 'failed' }); assert.equal(s.nodes.get('kar-loop').run, 'failed');
+  for (const bad of [{ t: 'run', id: 'kar-loop', state: 'asleep' }, { t: 'run', id: 'ghost', state: 'ok' }, { t: 'run', id: 'kar-loop' }]) apply(s, bad);
+  assert.equal(s.nodes.get('kar-loop').run, 'failed', 'what is not a real run state, or not a real node, changes nothing');
+  assert.equal(s.ignored, 3);
+  assert.equal(hashState(replay([...base, { t: 'run', id: 'kar-loop', state: 'failed' }])), hashState(replay(base)), 'a run never changes the hash: public receipts stay put');
+  assert.equal(replay(base).nodes.get('kar-loop').run, null);
+  assert.deepEqual(packetOf({ t: 'run', id: 'kar-loop', state: 'running', at: 'x' }), { k: 'run', id: 'kar-loop', state: 'running' });
+  assert.equal(say({ k: 'run', id: 'kar-loop', state: 'running' }), 'kar-loop is running');
+  assert.equal(say({ k: 'run', id: 'kar-loop', state: 'ok' }), 'kar-loop ran ok');
+  assert.equal(say({ k: 'run', id: 'kar-loop', state: 'failed' }), 'kar-loop failed');
+  // its rank is 10: two digits, so it still sorts after every other kind at the same moment
+  const ev = sortEvents([{ t: 'run', at: '1', id: 'a' }, { t: 'flow', at: '1', a: 'a' }, { t: 'germinate', at: '1', id: 'a' }, { t: 'stage', at: '1', id: 'a' }]);
+  assert.deepEqual(ev.map((e) => e.t), ['germinate', 'stage', 'flow', 'run']);
 });
 
 test('a sim mark rides on what the simulation makes', () => {
@@ -319,7 +340,7 @@ test('layoutStep is FallGarden\'s own physics, number for number (the reuse, pro
 });
 
 test('the default export carries every part', () => {
-  assert.deepEqual(Object.keys(K), ['STAGES', 'SIM', 'BANNER', 'PHYS', 'NIGHTS', 'KINDS', 'hash64', 'mulberry32', 'shuffle', 'emptyState', 'edgeKey', 'apply', 'replay', 'hashState', 'sortEvents', 'linkPairs',
+  assert.deepEqual(Object.keys(K), ['STAGES', 'SIM', 'BANNER', 'PHYS', 'NIGHTS', 'KINDS', 'RUN_STATES', 'hash64', 'mulberry32', 'shuffle', 'emptyState', 'edgeKey', 'apply', 'replay', 'hashState', 'sortEvents', 'linkPairs',
     'eventsFromEstate', 'auditEstate', 'PROPOSE_K', 'pairsFor', 'nightOf', 'stagesFor', 'growFromSeed', 'validProcess', 'simulate', 'packetOf', 'say', 'layoutStep']);
 });
 

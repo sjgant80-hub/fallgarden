@@ -16,9 +16,9 @@ const STAGE_GLOW = { shadow: 0, draft: 0.25, assist: 0.55, autonomous: 0.9 };
 export const SCALE = Object.freeze({ vmax: 12, reach: 400 });
 const fnv = (s) => { let h = 0x811c9dc5; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 0x01000193) >>> 0; } return h; };
 export const styleOf = (n) => {
-  const base = n.sim ? COLORS.sim : n.ci === 'green' ? COLORS.green : n.ci === 'red' ? COLORS.red : COLORS[n.kind] || COLORS.repo;
+  const base = n.sim ? COLORS.sim : n.run === 'failed' || n.ci === 'red' ? COLORS.red : n.ci === 'green' ? COLORS.green : COLORS[n.kind] || COLORS.repo;
   const r = n.kind === 'core' ? 9 : n.kind === 'layer' ? 7 : n.kind === 'organ' || n.kind === 'library' ? 6.5 : 3.2;
-  return { rgb: base, r, glow: STAGE_GLOW[n.stage] || 0 };
+  return { rgb: base, r, glow: Math.max(STAGE_GLOW[n.stage] || 0, n.run === 'running' ? 0.95 : 0) };
 };
 
 export async function webgpuAvailable(force) {

@@ -31,3 +31,15 @@ test('the page has no video, and carries the banner and the receipts it claims',
   assert.match(app, /\$\('banner'\)\.style\.display = view === 'build' \? 'block' : 'none';/, 'G6: the banner shows whenever Your build is open');
   assert.match(html, /connect-src 'self'/, 'the page talks to nothing but itself');
 });
+test('P2: nothing private lives in this public repo, and the private tab is hidden until this machine\'s own server answers', () => {
+  const html = readFileSync(new URL('live/index.html', root), 'utf8');
+  const app = readFileSync(new URL('live/app.mjs', root), 'utf8');
+  assert.match(html, /<button id="v-private" aria-pressed="false" hidden /, 'the tab is hidden by default');
+  assert.match(app, /\$\('v-private'\)\.hidden = !S\.private;/);
+  assert.match(app, /S\.private = !!\(j && j\.ok === true && j\.server === 'garden-live'\)/, 'only the local garden-live server can reveal it');
+  assert.equal((app.match(/fetch\('\.\/private\//g) || []).length, 4, 'private data is only ever fetched by relative path (hello, the snapshot, the events, the poll), from whatever served this page');
+  assert.equal(/https?:\/\/[^'"]*private/.test(app), false, 'never from an absolute address');
+  const snap = JSON.parse(readFileSync(new URL('live/data/estate.json', root), 'utf8'));
+  assert.equal(snap.repos.some((r) => r.private === true), false, 'the public snapshot holds no private repo');
+  assert.equal(readdirSync(new URL('live/', root)).includes('private'), false, 'no private folder in the repo');
+});
