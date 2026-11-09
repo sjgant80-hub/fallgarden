@@ -5,6 +5,7 @@ import K from './kernel.mjs';
 import { prime, encode, decode } from './vendor/light-codec.mjs';
 import { LIGHT_DICT } from './dict.mjs';
 import { createEngine, CPU_CAP } from './engine.mjs';
+import { mintCase, sourcesOf } from './vendor/mintcase.mjs';
 
 const $ = (id) => document.getElementById(id);
 const te = new TextEncoder(), td = new TextDecoder();
@@ -233,6 +234,7 @@ function fillBlueprint() {
     ['data/sample-process.json', 'The example law firm for Your build. Its enquiries are synthetic, written from templates by tools/sample.mjs.', 'labelled synthetic in the file and on the page'],
     ['engine.mjs', 'The renderer: a WGSL compute shader runs FallGarden\'s forces over every node; nodes, edges and library particles are GPU instances. The fallback is a 2D canvas.', 'draws state; never invents it'],
     ['grow-worker.mjs', 'Runs the growth and the simulation off the main thread, so the gate\'s work never freezes the page.', 'same kernel as CI'],
+    ['vendor/mintcase.mjs + vendor/basis.json', 'The cost case for one process, byte for byte from Liveware: staff time today, the two rented routes and owning it, from sourced figures and your own inputs.', 'witness 21/0 in Liveware; SHA-256 pinned here'],
     ['tools/hashes.mjs', 'Recomputes every view\'s final hash and every packet\'s round trip; with --check it fails the build on any difference.', 'runs on GitHub\'s runner on every push'],
   ];
   const box = $('organs');
@@ -243,6 +245,43 @@ function fillBlueprint() {
     const p = document.createElement('p'); p.textContent = what;
     const g = document.createElement('p'); g.style.marginTop = '6px'; g.style.color = 'var(--sage)'; g.textContent = gate;
     c.append(h, p, g); box.appendChild(c);
+  }
+}
+
+// ── for business: the cost case, computed by vendor/mintcase.mjs (Liveware's, byte for byte) from the sourced basis ──
+const gbp = (n) => '£' + Math.round(n).toLocaleString('en-GB');
+function renderCost() {
+  const basis = S.basis, box = $('c-head');
+  if (!basis) { box.textContent = 'The sourced basis did not load; reload the page.'; return; }
+  const v = (id) => Number($(id).value);
+  const r = mintCase(basis, { hoursPerWeek: v('c-hours'), share: v('c-share') / 100, seats: v('c-seats'), casesPerWeek: v('c-cases'), years: v('c-years') });
+  if (!r.ok) { box.textContent = 'Check the inputs: ' + r.why + '.'; return; }
+  const n = r.inputs.years, yrs = n + (n === 1 ? ' year' : ' years');
+  $('c-overh').textContent = 'Over ' + yrs;
+  box.textContent = `This process costs you ${gbp(r.perYear.today)} a year in staff time today. Owning it: ${gbp(r.perYear.own)} a year, which is ${gbp(r.savingPerYear)} a year back and ${gbp(r.savingOver)} over ${yrs}.`;
+  const rows = [
+    ['Today', 'Your team does all of it.', 'today'],
+    ['Rent AI assistant seats', `Microsoft 365 Copilot for ${r.inputs.seats} people (${gbp(r.lines.seats)} a year). It helps each person; the work, and the staff time, stay.`, 'rentSeats'],
+    ['Call a cloud AI on every case', `Takes the same share off, billed per case at Claude Sonnet 5 API rates (${gbp(r.lines.api)} a year at your volume), and every case leaves your building.`, 'cloudApi'],
+    ['Own it (mint-a-department)', `Takes the same share off on a machine you already have, for about ${gbp(r.lines.power)} a year of electricity, always on. No seats, no meter, nothing leaves.`, 'own'],
+  ];
+  const tb = $('c-table').querySelector('tbody');
+  tb.replaceChildren();
+  for (const [route, what, k] of rows) {
+    const tr = document.createElement('tr');
+    for (const [txt, bold] of [[route, true], [what, false], [gbp(r.perYear[k]), false], [gbp(r.over[k]), false]]) { const td = document.createElement('td'); if (bold) { const b = document.createElement('b'); b.textContent = txt; td.appendChild(b); } else td.textContent = txt; tr.appendChild(td); }
+    tb.appendChild(tr);
+  }
+  $('c-note').textContent = `Owning beats the cloud route by ${gbp(r.versusCloudOver)} over ${yrs} at this volume. At low volumes the per-case bill is small, and the real difference is that nothing leaves your building. Staff time is a floor: the UK median wage, with on-costs left out.`;
+  $('c-board').textContent = `Pick one process. Today it costs ${gbp(r.perYear.today)} a year in staff time, a floor at the UK median wage. If an owned system takes off the share you estimate, that is ${gbp(r.savingPerYear)} a year back, on hardware you already have, with nothing leaving the building. The fee is agreed in a baseline agreement and is due only on a receipt that shows the system beat your current way on your own data. Watch the process run in Your build first, then decide on evidence.`;
+}
+function fillSources() {
+  const ul = $('c-src');
+  ul.replaceChildren();
+  for (const s of sourcesOf(S.basis || {})) {
+    const li = document.createElement('li'); li.textContent = s.what + (s.source ? ': ' : '');
+    if (s.source) { const a = document.createElement('a'); a.href = s.source; a.target = '_blank'; a.rel = 'noopener'; try { a.textContent = new URL(s.source).hostname; } catch { a.textContent = s.source; } li.appendChild(a); }
+    ul.appendChild(li);
   }
 }
 
@@ -305,12 +344,15 @@ function wire() {
 
 async function main() {
   resize();
-  const [snap, receipts, sample] = await Promise.all([
+  const [snap, receipts, sample, basis] = await Promise.all([
     fetch('./data/estate.json').then((r) => r.json()),
     fetch('./receipts.json').then((r) => (r.ok ? r.json() : null)).catch(() => null),
     fetch('./data/sample-process.json').then((r) => r.json()),
+    fetch('./vendor/basis.json').then((r) => (r.ok ? r.json() : null)).catch(() => null),
   ]);
-  S.snap = snap; S.receipts = receipts; S.sample = sample;
+  S.snap = snap; S.receipts = receipts; S.sample = sample; S.basis = basis;
+  fillSources(); renderCost();
+  for (const id of ['c-hours', 'c-share', 'c-seats', 'c-cases', 'c-years']) $(id).addEventListener('input', renderCost);
   fillForm(sample); fillFacts(); fillBlueprint();
   S.engine = await createEngine($('gl'), $('overlay'), { gpu: qs.get('gpu') === '0' ? false : undefined });
   window.__live = { S, K, CPU_CAP };

@@ -231,6 +231,22 @@ footer{border-top:1px solid var(--line);padding:18px 16px;color:var(--muted);fon
     <tr><td>Operations</td><td>Your own steps and the people who do them, drawn as organs that hand work across. You see where decisions sit and where a gate would check them.</td></tr>
     <tr><td>IT / security</td><td>The real build runs on your hardware, and your data never leaves it. This page sends nothing anywhere: your described process stays in your tab.</td></tr>
   </table>
+  <h3>The cost case for one process</h3>
+  <p class="muted">Your own numbers in, sourced figures for the rest: the UK median wage, CPI, electricity, and today's prices for assistant seats and a cloud model, each source listed below. These are your costs; no price of ours appears here.</p>
+  <div class="controls" style="margin-top:8px">
+    <label>hours a week on it <input id="c-hours" type="number" min="0" max="168" value="20"></label>
+    <label>share an owned system takes off % <input id="c-share" type="number" min="0" max="100" value="50"></label>
+    <label>people <input id="c-seats" type="number" min="0" value="5"></label>
+    <label>cases a week <input id="c-cases" type="number" min="0" value="500"></label>
+    <label>years <input id="c-years" type="number" min="1" max="10" value="3"></label>
+  </div>
+  <p id="c-head" style="font-size:16px">…</p>
+  <table id="c-table"><thead><tr><th>Route</th><th>What it means</th><th>A year</th><th id="c-overh">Over the years</th></tr></thead><tbody></tbody></table>
+  <p id="c-note" class="muted" style="margin-top:8px"></p>
+  <h3>The case for the board</h3>
+  <p id="c-board"></p>
+  <p class="muted" style="margin-top:6px">Sources, as read into the basis:</p>
+  <ul id="c-src" class="muted" style="font-size:13px"></ul>
   <h3>Questions buyers ask</h3>
   <table>
     <tr><td><b>Is what I'm seeing real?</b></td><td>In <b>Your estate</b>, yes: every node is a public repo and every edge a recorded coupling; hover any node and open it on GitHub. <b>Grow a company</b> is a real computation: the library's rules really passed or failed the gate, and the same seed gives the same result anywhere. <b>Your build</b> is a simulation and says so on every node and in the banner.</td></tr>
