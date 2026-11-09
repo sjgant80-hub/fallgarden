@@ -1,0 +1,1570 @@
+{
+ "company": "Example & Co Solicitors",
+ "note": "An EXAMPLE process. Its enquiries are synthetic, written from phrase templates for this demo (live/tools/sample.mjs), not real client data.",
+ "steps": [
+  {
+   "name": "Enquiry intake",
+   "who": "reception"
+  },
+  {
+   "name": "Conflict check",
+   "who": "compliance"
+  },
+  {
+   "name": "Matter triage",
+   "who": "a partner",
+   "decides": [
+    "employment",
+    "property",
+    "family",
+    "commercial"
+   ]
+  },
+  {
+   "name": "Engagement letter",
+   "who": "the fee earner"
+  },
+  {
+   "name": "Matter opened",
+   "who": "accounts"
+  }
+ ],
+ "examples": [
+  {
+   "text": "Hello, dismissed without a hearing, can you help?",
+   "label": "employment"
+  },
+  {
+   "text": "Hi there, dismissed without a hearing, what are my options?",
+   "label": "employment"
+  },
+  {
+   "text": "Good morning, dismissed without a hearing, how much would it cost to start?",
+   "label": "employment"
+  },
+  {
+   "text": "Dear team, dismissed without a hearing, is there a deadline?",
+   "label": "employment"
+  },
+  {
+   "text": "Hello again, dismissed without a hearing, can we book a call?",
+   "label": "employment"
+  },
+  {
+   "text": "Hello, dismissed without a hearing, can you help?",
+   "label": "employment"
+  },
+  {
+   "text": "Hi there, dismissed without a hearing, what are my options?",
+   "label": "employment"
+  },
+  {
+   "text": "Good morning, dismissed without a hearing, how much would it cost to start?",
+   "label": "employment"
+  },
+  {
+   "text": "Dear team, dismissed without a hearing, is there a deadline?",
+   "label": "employment"
+  },
+  {
+   "text": "Hello again, dismissed without a hearing, can we book a call?",
+   "label": "employment"
+  },
+  {
+   "text": "Hello, dismissed without a hearing, can you help?",
+   "label": "employment"
+  },
+  {
+   "text": "Hi there, dismissed without a hearing, what are my options?",
+   "label": "employment"
+  },
+  {
+   "text": "Hi there, unpaid overtime from my employer, is there a deadline?",
+   "label": "employment"
+  },
+  {
+   "text": "Good morning, unpaid overtime from my employer, can we book a call?",
+   "label": "employment"
+  },
+  {
+   "text": "Dear team, unpaid overtime from my employer, can you help?",
+   "label": "employment"
+  },
+  {
+   "text": "Hello again, unpaid overtime from my employer, what are my options?",
+   "label": "employment"
+  },
+  {
+   "text": "Hello, unpaid overtime from my employer, how much would it cost to start?",
+   "label": "employment"
+  },
+  {
+   "text": "Hi there, unpaid overtime from my employer, is there a deadline?",
+   "label": "employment"
+  },
+  {
+   "text": "Good morning, unpaid overtime from my employer, can we book a call?",
+   "label": "employment"
+  },
+  {
+   "text": "Dear team, unpaid overtime from my employer, can you help?",
+   "label": "employment"
+  },
+  {
+   "text": "Hello again, unpaid overtime from my employer, what are my options?",
+   "label": "employment"
+  },
+  {
+   "text": "Hello, unpaid overtime from my employer, how much would it cost to start?",
+   "label": "employment"
+  },
+  {
+   "text": "Hi there, unpaid overtime from my employer, is there a deadline?",
+   "label": "employment"
+  },
+  {
+   "text": "Good morning, unpaid overtime from my employer, can we book a call?",
+   "label": "employment"
+  },
+  {
+   "text": "Good morning, my contract was ended after sick leave, what are my options?",
+   "label": "employment"
+  },
+  {
+   "text": "Dear team, my contract was ended after sick leave, how much would it cost to start?",
+   "label": "employment"
+  },
+  {
+   "text": "Hello again, my contract was ended after sick leave, is there a deadline?",
+   "label": "employment"
+  },
+  {
+   "text": "Hello, my contract was ended after sick leave, can we book a call?",
+   "label": "employment"
+  },
+  {
+   "text": "Hi there, my contract was ended after sick leave, can you help?",
+   "label": "employment"
+  },
+  {
+   "text": "Good morning, my contract was ended after sick leave, what are my options?",
+   "label": "employment"
+  },
+  {
+   "text": "Dear team, my contract was ended after sick leave, how much would it cost to start?",
+   "label": "employment"
+  },
+  {
+   "text": "Hello again, my contract was ended after sick leave, is there a deadline?",
+   "label": "employment"
+  },
+  {
+   "text": "Hello, my contract was ended after sick leave, can we book a call?",
+   "label": "employment"
+  },
+  {
+   "text": "Hi there, my contract was ended after sick leave, can you help?",
+   "label": "employment"
+  },
+  {
+   "text": "Good morning, my contract was ended after sick leave, what are my options?",
+   "label": "employment"
+  },
+  {
+   "text": "Dear team, my contract was ended after sick leave, how much would it cost to start?",
+   "label": "employment"
+  },
+  {
+   "text": "Dear team, redundancy selection felt unfair, can we book a call?",
+   "label": "employment"
+  },
+  {
+   "text": "Hello again, redundancy selection felt unfair, can you help?",
+   "label": "employment"
+  },
+  {
+   "text": "Hello, redundancy selection felt unfair, what are my options?",
+   "label": "employment"
+  },
+  {
+   "text": "Hi there, redundancy selection felt unfair, how much would it cost to start?",
+   "label": "employment"
+  },
+  {
+   "text": "Good morning, redundancy selection felt unfair, is there a deadline?",
+   "label": "employment"
+  },
+  {
+   "text": "Dear team, redundancy selection felt unfair, can we book a call?",
+   "label": "employment"
+  },
+  {
+   "text": "Hello again, redundancy selection felt unfair, can you help?",
+   "label": "employment"
+  },
+  {
+   "text": "Hello, redundancy selection felt unfair, what are my options?",
+   "label": "employment"
+  },
+  {
+   "text": "Hi there, redundancy selection felt unfair, how much would it cost to start?",
+   "label": "employment"
+  },
+  {
+   "text": "Good morning, redundancy selection felt unfair, is there a deadline?",
+   "label": "employment"
+  },
+  {
+   "text": "Dear team, redundancy selection felt unfair, can we book a call?",
+   "label": "employment"
+  },
+  {
+   "text": "Hello again, redundancy selection felt unfair, can you help?",
+   "label": "employment"
+  },
+  {
+   "text": "Hello again, discrimination at work by my manager, how much would it cost to start?",
+   "label": "employment"
+  },
+  {
+   "text": "Hello, discrimination at work by my manager, is there a deadline?",
+   "label": "employment"
+  },
+  {
+   "text": "Hi there, discrimination at work by my manager, can we book a call?",
+   "label": "employment"
+  },
+  {
+   "text": "Good morning, discrimination at work by my manager, can you help?",
+   "label": "employment"
+  },
+  {
+   "text": "Dear team, discrimination at work by my manager, what are my options?",
+   "label": "employment"
+  },
+  {
+   "text": "Hello again, discrimination at work by my manager, how much would it cost to start?",
+   "label": "employment"
+  },
+  {
+   "text": "Hello, discrimination at work by my manager, is there a deadline?",
+   "label": "employment"
+  },
+  {
+   "text": "Hi there, discrimination at work by my manager, can we book a call?",
+   "label": "employment"
+  },
+  {
+   "text": "Good morning, discrimination at work by my manager, can you help?",
+   "label": "employment"
+  },
+  {
+   "text": "Dear team, discrimination at work by my manager, what are my options?",
+   "label": "employment"
+  },
+  {
+   "text": "Hello again, discrimination at work by my manager, how much would it cost to start?",
+   "label": "employment"
+  },
+  {
+   "text": "Hello, discrimination at work by my manager, is there a deadline?",
+   "label": "employment"
+  },
+  {
+   "text": "Hello, my employer cut my hours without notice, can you help?",
+   "label": "employment"
+  },
+  {
+   "text": "Hi there, my employer cut my hours without notice, what are my options?",
+   "label": "employment"
+  },
+  {
+   "text": "Good morning, my employer cut my hours without notice, how much would it cost to start?",
+   "label": "employment"
+  },
+  {
+   "text": "Dear team, my employer cut my hours without notice, is there a deadline?",
+   "label": "employment"
+  },
+  {
+   "text": "Hello again, my employer cut my hours without notice, can we book a call?",
+   "label": "employment"
+  },
+  {
+   "text": "Hello, my employer cut my hours without notice, can you help?",
+   "label": "employment"
+  },
+  {
+   "text": "Hi there, my employer cut my hours without notice, what are my options?",
+   "label": "employment"
+  },
+  {
+   "text": "Good morning, my employer cut my hours without notice, how much would it cost to start?",
+   "label": "employment"
+  },
+  {
+   "text": "Dear team, my employer cut my hours without notice, is there a deadline?",
+   "label": "employment"
+  },
+  {
+   "text": "Hello again, my employer cut my hours without notice, can we book a call?",
+   "label": "employment"
+  },
+  {
+   "text": "Hello, my employer cut my hours without notice, can you help?",
+   "label": "employment"
+  },
+  {
+   "text": "Hi there, my employer cut my hours without notice, what are my options?",
+   "label": "employment"
+  },
+  {
+   "text": "Hi there, grievance ignored by my employer, is there a deadline?",
+   "label": "employment"
+  },
+  {
+   "text": "Good morning, grievance ignored by my employer, can we book a call?",
+   "label": "employment"
+  },
+  {
+   "text": "Dear team, grievance ignored by my employer, can you help?",
+   "label": "employment"
+  },
+  {
+   "text": "Hello again, grievance ignored by my employer, what are my options?",
+   "label": "employment"
+  },
+  {
+   "text": "Hello, grievance ignored by my employer, how much would it cost to start?",
+   "label": "employment"
+  },
+  {
+   "text": "Hi there, grievance ignored by my employer, is there a deadline?",
+   "label": "employment"
+  },
+  {
+   "text": "Good morning, grievance ignored by my employer, can we book a call?",
+   "label": "employment"
+  },
+  {
+   "text": "Dear team, grievance ignored by my employer, can you help?",
+   "label": "employment"
+  },
+  {
+   "text": "Hello again, grievance ignored by my employer, what are my options?",
+   "label": "employment"
+  },
+  {
+   "text": "Hello, grievance ignored by my employer, how much would it cost to start?",
+   "label": "employment"
+  },
+  {
+   "text": "Hi there, grievance ignored by my employer, is there a deadline?",
+   "label": "employment"
+  },
+  {
+   "text": "Good morning, grievance ignored by my employer, can we book a call?",
+   "label": "employment"
+  },
+  {
+   "text": "Good morning, constructive dismissal after a demotion, what are my options?",
+   "label": "employment"
+  },
+  {
+   "text": "Dear team, constructive dismissal after a demotion, how much would it cost to start?",
+   "label": "employment"
+  },
+  {
+   "text": "Hello again, constructive dismissal after a demotion, is there a deadline?",
+   "label": "employment"
+  },
+  {
+   "text": "Hello, constructive dismissal after a demotion, can we book a call?",
+   "label": "employment"
+  },
+  {
+   "text": "Hi there, constructive dismissal after a demotion, can you help?",
+   "label": "employment"
+  },
+  {
+   "text": "Good morning, constructive dismissal after a demotion, what are my options?",
+   "label": "employment"
+  },
+  {
+   "text": "Dear team, constructive dismissal after a demotion, how much would it cost to start?",
+   "label": "employment"
+  },
+  {
+   "text": "Hello again, constructive dismissal after a demotion, is there a deadline?",
+   "label": "employment"
+  },
+  {
+   "text": "Hello, constructive dismissal after a demotion, can we book a call?",
+   "label": "employment"
+  },
+  {
+   "text": "Hi there, constructive dismissal after a demotion, can you help?",
+   "label": "employment"
+  },
+  {
+   "text": "Good morning, constructive dismissal after a demotion, what are my options?",
+   "label": "employment"
+  },
+  {
+   "text": "Dear team, constructive dismissal after a demotion, how much would it cost to start?",
+   "label": "employment"
+  },
+  {
+   "text": "Hello, my landlord is keeping my deposit, can you help?",
+   "label": "property"
+  },
+  {
+   "text": "Hi there, my landlord is keeping my deposit, what are my options?",
+   "label": "property"
+  },
+  {
+   "text": "Good morning, my landlord is keeping my deposit, how much would it cost to start?",
+   "label": "property"
+  },
+  {
+   "text": "Dear team, my landlord is keeping my deposit, is there a deadline?",
+   "label": "property"
+  },
+  {
+   "text": "Hello again, my landlord is keeping my deposit, can we book a call?",
+   "label": "property"
+  },
+  {
+   "text": "Hello, my landlord is keeping my deposit, can you help?",
+   "label": "property"
+  },
+  {
+   "text": "Hi there, my landlord is keeping my deposit, what are my options?",
+   "label": "property"
+  },
+  {
+   "text": "Good morning, my landlord is keeping my deposit, how much would it cost to start?",
+   "label": "property"
+  },
+  {
+   "text": "Dear team, my landlord is keeping my deposit, is there a deadline?",
+   "label": "property"
+  },
+  {
+   "text": "Hello again, my landlord is keeping my deposit, can we book a call?",
+   "label": "property"
+  },
+  {
+   "text": "Hello, my landlord is keeping my deposit, can you help?",
+   "label": "property"
+  },
+  {
+   "text": "Hi there, my landlord is keeping my deposit, what are my options?",
+   "label": "property"
+  },
+  {
+   "text": "Hi there, a boundary dispute with the neighbour, is there a deadline?",
+   "label": "property"
+  },
+  {
+   "text": "Good morning, a boundary dispute with the neighbour, can we book a call?",
+   "label": "property"
+  },
+  {
+   "text": "Dear team, a boundary dispute with the neighbour, can you help?",
+   "label": "property"
+  },
+  {
+   "text": "Hello again, a boundary dispute with the neighbour, what are my options?",
+   "label": "property"
+  },
+  {
+   "text": "Hello, a boundary dispute with the neighbour, how much would it cost to start?",
+   "label": "property"
+  },
+  {
+   "text": "Hi there, a boundary dispute with the neighbour, is there a deadline?",
+   "label": "property"
+  },
+  {
+   "text": "Good morning, a boundary dispute with the neighbour, can we book a call?",
+   "label": "property"
+  },
+  {
+   "text": "Dear team, a boundary dispute with the neighbour, can you help?",
+   "label": "property"
+  },
+  {
+   "text": "Hello again, a boundary dispute with the neighbour, what are my options?",
+   "label": "property"
+  },
+  {
+   "text": "Hello, a boundary dispute with the neighbour, how much would it cost to start?",
+   "label": "property"
+  },
+  {
+   "text": "Hi there, a boundary dispute with the neighbour, is there a deadline?",
+   "label": "property"
+  },
+  {
+   "text": "Good morning, a boundary dispute with the neighbour, can we book a call?",
+   "label": "property"
+  },
+  {
+   "text": "Good morning, buying a leasehold flat and the lease is short, what are my options?",
+   "label": "property"
+  },
+  {
+   "text": "Dear team, buying a leasehold flat and the lease is short, how much would it cost to start?",
+   "label": "property"
+  },
+  {
+   "text": "Hello again, buying a leasehold flat and the lease is short, is there a deadline?",
+   "label": "property"
+  },
+  {
+   "text": "Hello, buying a leasehold flat and the lease is short, can we book a call?",
+   "label": "property"
+  },
+  {
+   "text": "Hi there, buying a leasehold flat and the lease is short, can you help?",
+   "label": "property"
+  },
+  {
+   "text": "Good morning, buying a leasehold flat and the lease is short, what are my options?",
+   "label": "property"
+  },
+  {
+   "text": "Dear team, buying a leasehold flat and the lease is short, how much would it cost to start?",
+   "label": "property"
+  },
+  {
+   "text": "Hello again, buying a leasehold flat and the lease is short, is there a deadline?",
+   "label": "property"
+  },
+  {
+   "text": "Hello, buying a leasehold flat and the lease is short, can we book a call?",
+   "label": "property"
+  },
+  {
+   "text": "Hi there, buying a leasehold flat and the lease is short, can you help?",
+   "label": "property"
+  },
+  {
+   "text": "Good morning, buying a leasehold flat and the lease is short, what are my options?",
+   "label": "property"
+  },
+  {
+   "text": "Dear team, buying a leasehold flat and the lease is short, how much would it cost to start?",
+   "label": "property"
+  },
+  {
+   "text": "Dear team, the tenant stopped paying rent, can we book a call?",
+   "label": "property"
+  },
+  {
+   "text": "Hello again, the tenant stopped paying rent, can you help?",
+   "label": "property"
+  },
+  {
+   "text": "Hello, the tenant stopped paying rent, what are my options?",
+   "label": "property"
+  },
+  {
+   "text": "Hi there, the tenant stopped paying rent, how much would it cost to start?",
+   "label": "property"
+  },
+  {
+   "text": "Good morning, the tenant stopped paying rent, is there a deadline?",
+   "label": "property"
+  },
+  {
+   "text": "Dear team, the tenant stopped paying rent, can we book a call?",
+   "label": "property"
+  },
+  {
+   "text": "Hello again, the tenant stopped paying rent, can you help?",
+   "label": "property"
+  },
+  {
+   "text": "Hello, the tenant stopped paying rent, what are my options?",
+   "label": "property"
+  },
+  {
+   "text": "Hi there, the tenant stopped paying rent, how much would it cost to start?",
+   "label": "property"
+  },
+  {
+   "text": "Good morning, the tenant stopped paying rent, is there a deadline?",
+   "label": "property"
+  },
+  {
+   "text": "Dear team, the tenant stopped paying rent, can we book a call?",
+   "label": "property"
+  },
+  {
+   "text": "Hello again, the tenant stopped paying rent, can you help?",
+   "label": "property"
+  },
+  {
+   "text": "Hello again, damp in the rented flat the landlord will not fix, how much would it cost to start?",
+   "label": "property"
+  },
+  {
+   "text": "Hello, damp in the rented flat the landlord will not fix, is there a deadline?",
+   "label": "property"
+  },
+  {
+   "text": "Hi there, damp in the rented flat the landlord will not fix, can we book a call?",
+   "label": "property"
+  },
+  {
+   "text": "Good morning, damp in the rented flat the landlord will not fix, can you help?",
+   "label": "property"
+  },
+  {
+   "text": "Dear team, damp in the rented flat the landlord will not fix, what are my options?",
+   "label": "property"
+  },
+  {
+   "text": "Hello again, damp in the rented flat the landlord will not fix, how much would it cost to start?",
+   "label": "property"
+  },
+  {
+   "text": "Hello, damp in the rented flat the landlord will not fix, is there a deadline?",
+   "label": "property"
+  },
+  {
+   "text": "Hi there, damp in the rented flat the landlord will not fix, can we book a call?",
+   "label": "property"
+  },
+  {
+   "text": "Good morning, damp in the rented flat the landlord will not fix, can you help?",
+   "label": "property"
+  },
+  {
+   "text": "Dear team, damp in the rented flat the landlord will not fix, what are my options?",
+   "label": "property"
+  },
+  {
+   "text": "Hello again, damp in the rented flat the landlord will not fix, how much would it cost to start?",
+   "label": "property"
+  },
+  {
+   "text": "Hello, damp in the rented flat the landlord will not fix, is there a deadline?",
+   "label": "property"
+  },
+  {
+   "text": "Hello, a right of way over our land, can you help?",
+   "label": "property"
+  },
+  {
+   "text": "Hi there, a right of way over our land, what are my options?",
+   "label": "property"
+  },
+  {
+   "text": "Good morning, a right of way over our land, how much would it cost to start?",
+   "label": "property"
+  },
+  {
+   "text": "Dear team, a right of way over our land, is there a deadline?",
+   "label": "property"
+  },
+  {
+   "text": "Hello again, a right of way over our land, can we book a call?",
+   "label": "property"
+  },
+  {
+   "text": "Hello, a right of way over our land, can you help?",
+   "label": "property"
+  },
+  {
+   "text": "Hi there, a right of way over our land, what are my options?",
+   "label": "property"
+  },
+  {
+   "text": "Good morning, a right of way over our land, how much would it cost to start?",
+   "label": "property"
+  },
+  {
+   "text": "Dear team, a right of way over our land, is there a deadline?",
+   "label": "property"
+  },
+  {
+   "text": "Hello again, a right of way over our land, can we book a call?",
+   "label": "property"
+  },
+  {
+   "text": "Hello, a right of way over our land, can you help?",
+   "label": "property"
+  },
+  {
+   "text": "Hi there, a right of way over our land, what are my options?",
+   "label": "property"
+  },
+  {
+   "text": "Hi there, eviction notice from my landlord, is there a deadline?",
+   "label": "property"
+  },
+  {
+   "text": "Good morning, eviction notice from my landlord, can we book a call?",
+   "label": "property"
+  },
+  {
+   "text": "Dear team, eviction notice from my landlord, can you help?",
+   "label": "property"
+  },
+  {
+   "text": "Hello again, eviction notice from my landlord, what are my options?",
+   "label": "property"
+  },
+  {
+   "text": "Hello, eviction notice from my landlord, how much would it cost to start?",
+   "label": "property"
+  },
+  {
+   "text": "Hi there, eviction notice from my landlord, is there a deadline?",
+   "label": "property"
+  },
+  {
+   "text": "Good morning, eviction notice from my landlord, can we book a call?",
+   "label": "property"
+  },
+  {
+   "text": "Dear team, eviction notice from my landlord, can you help?",
+   "label": "property"
+  },
+  {
+   "text": "Hello again, eviction notice from my landlord, what are my options?",
+   "label": "property"
+  },
+  {
+   "text": "Hello, eviction notice from my landlord, how much would it cost to start?",
+   "label": "property"
+  },
+  {
+   "text": "Hi there, eviction notice from my landlord, is there a deadline?",
+   "label": "property"
+  },
+  {
+   "text": "Good morning, eviction notice from my landlord, can we book a call?",
+   "label": "property"
+  },
+  {
+   "text": "Good morning, the survey missed subsidence on the house, what are my options?",
+   "label": "property"
+  },
+  {
+   "text": "Dear team, the survey missed subsidence on the house, how much would it cost to start?",
+   "label": "property"
+  },
+  {
+   "text": "Hello again, the survey missed subsidence on the house, is there a deadline?",
+   "label": "property"
+  },
+  {
+   "text": "Hello, the survey missed subsidence on the house, can we book a call?",
+   "label": "property"
+  },
+  {
+   "text": "Hi there, the survey missed subsidence on the house, can you help?",
+   "label": "property"
+  },
+  {
+   "text": "Good morning, the survey missed subsidence on the house, what are my options?",
+   "label": "property"
+  },
+  {
+   "text": "Dear team, the survey missed subsidence on the house, how much would it cost to start?",
+   "label": "property"
+  },
+  {
+   "text": "Hello again, the survey missed subsidence on the house, is there a deadline?",
+   "label": "property"
+  },
+  {
+   "text": "Hello, the survey missed subsidence on the house, can we book a call?",
+   "label": "property"
+  },
+  {
+   "text": "Hi there, the survey missed subsidence on the house, can you help?",
+   "label": "property"
+  },
+  {
+   "text": "Good morning, the survey missed subsidence on the house, what are my options?",
+   "label": "property"
+  },
+  {
+   "text": "Dear team, the survey missed subsidence on the house, how much would it cost to start?",
+   "label": "property"
+  },
+  {
+   "text": "Hello, divorce and arrangements for the children, can you help?",
+   "label": "family"
+  },
+  {
+   "text": "Hi there, divorce and arrangements for the children, what are my options?",
+   "label": "family"
+  },
+  {
+   "text": "Good morning, divorce and arrangements for the children, how much would it cost to start?",
+   "label": "family"
+  },
+  {
+   "text": "Dear team, divorce and arrangements for the children, is there a deadline?",
+   "label": "family"
+  },
+  {
+   "text": "Hello again, divorce and arrangements for the children, can we book a call?",
+   "label": "family"
+  },
+  {
+   "text": "Hello, divorce and arrangements for the children, can you help?",
+   "label": "family"
+  },
+  {
+   "text": "Hi there, divorce and arrangements for the children, what are my options?",
+   "label": "family"
+  },
+  {
+   "text": "Good morning, divorce and arrangements for the children, how much would it cost to start?",
+   "label": "family"
+  },
+  {
+   "text": "Dear team, divorce and arrangements for the children, is there a deadline?",
+   "label": "family"
+  },
+  {
+   "text": "Hello again, divorce and arrangements for the children, can we book a call?",
+   "label": "family"
+  },
+  {
+   "text": "Hello, divorce and arrangements for the children, can you help?",
+   "label": "family"
+  },
+  {
+   "text": "Hi there, divorce and arrangements for the children, what are my options?",
+   "label": "family"
+  },
+  {
+   "text": "Hi there, a child contact order after separation, is there a deadline?",
+   "label": "family"
+  },
+  {
+   "text": "Good morning, a child contact order after separation, can we book a call?",
+   "label": "family"
+  },
+  {
+   "text": "Dear team, a child contact order after separation, can you help?",
+   "label": "family"
+  },
+  {
+   "text": "Hello again, a child contact order after separation, what are my options?",
+   "label": "family"
+  },
+  {
+   "text": "Hello, a child contact order after separation, how much would it cost to start?",
+   "label": "family"
+  },
+  {
+   "text": "Hi there, a child contact order after separation, is there a deadline?",
+   "label": "family"
+  },
+  {
+   "text": "Good morning, a child contact order after separation, can we book a call?",
+   "label": "family"
+  },
+  {
+   "text": "Dear team, a child contact order after separation, can you help?",
+   "label": "family"
+  },
+  {
+   "text": "Hello again, a child contact order after separation, what are my options?",
+   "label": "family"
+  },
+  {
+   "text": "Hello, a child contact order after separation, how much would it cost to start?",
+   "label": "family"
+  },
+  {
+   "text": "Hi there, a child contact order after separation, is there a deadline?",
+   "label": "family"
+  },
+  {
+   "text": "Good morning, a child contact order after separation, can we book a call?",
+   "label": "family"
+  },
+  {
+   "text": "Good morning, splitting the house after a separation, what are my options?",
+   "label": "family"
+  },
+  {
+   "text": "Dear team, splitting the house after a separation, how much would it cost to start?",
+   "label": "family"
+  },
+  {
+   "text": "Hello again, splitting the house after a separation, is there a deadline?",
+   "label": "family"
+  },
+  {
+   "text": "Hello, splitting the house after a separation, can we book a call?",
+   "label": "family"
+  },
+  {
+   "text": "Hi there, splitting the house after a separation, can you help?",
+   "label": "family"
+  },
+  {
+   "text": "Good morning, splitting the house after a separation, what are my options?",
+   "label": "family"
+  },
+  {
+   "text": "Dear team, splitting the house after a separation, how much would it cost to start?",
+   "label": "family"
+  },
+  {
+   "text": "Hello again, splitting the house after a separation, is there a deadline?",
+   "label": "family"
+  },
+  {
+   "text": "Hello, splitting the house after a separation, can we book a call?",
+   "label": "family"
+  },
+  {
+   "text": "Hi there, splitting the house after a separation, can you help?",
+   "label": "family"
+  },
+  {
+   "text": "Good morning, splitting the house after a separation, what are my options?",
+   "label": "family"
+  },
+  {
+   "text": "Dear team, splitting the house after a separation, how much would it cost to start?",
+   "label": "family"
+  },
+  {
+   "text": "Dear team, a prenuptial agreement before the wedding, can we book a call?",
+   "label": "family"
+  },
+  {
+   "text": "Hello again, a prenuptial agreement before the wedding, can you help?",
+   "label": "family"
+  },
+  {
+   "text": "Hello, a prenuptial agreement before the wedding, what are my options?",
+   "label": "family"
+  },
+  {
+   "text": "Hi there, a prenuptial agreement before the wedding, how much would it cost to start?",
+   "label": "family"
+  },
+  {
+   "text": "Good morning, a prenuptial agreement before the wedding, is there a deadline?",
+   "label": "family"
+  },
+  {
+   "text": "Dear team, a prenuptial agreement before the wedding, can we book a call?",
+   "label": "family"
+  },
+  {
+   "text": "Hello again, a prenuptial agreement before the wedding, can you help?",
+   "label": "family"
+  },
+  {
+   "text": "Hello, a prenuptial agreement before the wedding, what are my options?",
+   "label": "family"
+  },
+  {
+   "text": "Hi there, a prenuptial agreement before the wedding, how much would it cost to start?",
+   "label": "family"
+  },
+  {
+   "text": "Good morning, a prenuptial agreement before the wedding, is there a deadline?",
+   "label": "family"
+  },
+  {
+   "text": "Dear team, a prenuptial agreement before the wedding, can we book a call?",
+   "label": "family"
+  },
+  {
+   "text": "Hello again, a prenuptial agreement before the wedding, can you help?",
+   "label": "family"
+  },
+  {
+   "text": "Hello again, my former partner stopped child maintenance, how much would it cost to start?",
+   "label": "family"
+  },
+  {
+   "text": "Hello, my former partner stopped child maintenance, is there a deadline?",
+   "label": "family"
+  },
+  {
+   "text": "Hi there, my former partner stopped child maintenance, can we book a call?",
+   "label": "family"
+  },
+  {
+   "text": "Good morning, my former partner stopped child maintenance, can you help?",
+   "label": "family"
+  },
+  {
+   "text": "Dear team, my former partner stopped child maintenance, what are my options?",
+   "label": "family"
+  },
+  {
+   "text": "Hello again, my former partner stopped child maintenance, how much would it cost to start?",
+   "label": "family"
+  },
+  {
+   "text": "Hello, my former partner stopped child maintenance, is there a deadline?",
+   "label": "family"
+  },
+  {
+   "text": "Hi there, my former partner stopped child maintenance, can we book a call?",
+   "label": "family"
+  },
+  {
+   "text": "Good morning, my former partner stopped child maintenance, can you help?",
+   "label": "family"
+  },
+  {
+   "text": "Dear team, my former partner stopped child maintenance, what are my options?",
+   "label": "family"
+  },
+  {
+   "text": "Hello again, my former partner stopped child maintenance, how much would it cost to start?",
+   "label": "family"
+  },
+  {
+   "text": "Hello, my former partner stopped child maintenance, is there a deadline?",
+   "label": "family"
+  },
+  {
+   "text": "Hello, adoption by a step-parent, can you help?",
+   "label": "family"
+  },
+  {
+   "text": "Hi there, adoption by a step-parent, what are my options?",
+   "label": "family"
+  },
+  {
+   "text": "Good morning, adoption by a step-parent, how much would it cost to start?",
+   "label": "family"
+  },
+  {
+   "text": "Dear team, adoption by a step-parent, is there a deadline?",
+   "label": "family"
+  },
+  {
+   "text": "Hello again, adoption by a step-parent, can we book a call?",
+   "label": "family"
+  },
+  {
+   "text": "Hello, adoption by a step-parent, can you help?",
+   "label": "family"
+  },
+  {
+   "text": "Hi there, adoption by a step-parent, what are my options?",
+   "label": "family"
+  },
+  {
+   "text": "Good morning, adoption by a step-parent, how much would it cost to start?",
+   "label": "family"
+  },
+  {
+   "text": "Dear team, adoption by a step-parent, is there a deadline?",
+   "label": "family"
+  },
+  {
+   "text": "Hello again, adoption by a step-parent, can we book a call?",
+   "label": "family"
+  },
+  {
+   "text": "Hello, adoption by a step-parent, can you help?",
+   "label": "family"
+  },
+  {
+   "text": "Hi there, adoption by a step-parent, what are my options?",
+   "label": "family"
+  },
+  {
+   "text": "Hi there, a non-molestation order for my safety, is there a deadline?",
+   "label": "family"
+  },
+  {
+   "text": "Good morning, a non-molestation order for my safety, can we book a call?",
+   "label": "family"
+  },
+  {
+   "text": "Dear team, a non-molestation order for my safety, can you help?",
+   "label": "family"
+  },
+  {
+   "text": "Hello again, a non-molestation order for my safety, what are my options?",
+   "label": "family"
+  },
+  {
+   "text": "Hello, a non-molestation order for my safety, how much would it cost to start?",
+   "label": "family"
+  },
+  {
+   "text": "Hi there, a non-molestation order for my safety, is there a deadline?",
+   "label": "family"
+  },
+  {
+   "text": "Good morning, a non-molestation order for my safety, can we book a call?",
+   "label": "family"
+  },
+  {
+   "text": "Dear team, a non-molestation order for my safety, can you help?",
+   "label": "family"
+  },
+  {
+   "text": "Hello again, a non-molestation order for my safety, what are my options?",
+   "label": "family"
+  },
+  {
+   "text": "Hello, a non-molestation order for my safety, how much would it cost to start?",
+   "label": "family"
+  },
+  {
+   "text": "Hi there, a non-molestation order for my safety, is there a deadline?",
+   "label": "family"
+  },
+  {
+   "text": "Good morning, a non-molestation order for my safety, can we book a call?",
+   "label": "family"
+  },
+  {
+   "text": "Good morning, grandparents asking to see the children, what are my options?",
+   "label": "family"
+  },
+  {
+   "text": "Dear team, grandparents asking to see the children, how much would it cost to start?",
+   "label": "family"
+  },
+  {
+   "text": "Hello again, grandparents asking to see the children, is there a deadline?",
+   "label": "family"
+  },
+  {
+   "text": "Hello, grandparents asking to see the children, can we book a call?",
+   "label": "family"
+  },
+  {
+   "text": "Hi there, grandparents asking to see the children, can you help?",
+   "label": "family"
+  },
+  {
+   "text": "Good morning, grandparents asking to see the children, what are my options?",
+   "label": "family"
+  },
+  {
+   "text": "Dear team, grandparents asking to see the children, how much would it cost to start?",
+   "label": "family"
+  },
+  {
+   "text": "Hello again, grandparents asking to see the children, is there a deadline?",
+   "label": "family"
+  },
+  {
+   "text": "Hello, grandparents asking to see the children, can we book a call?",
+   "label": "family"
+  },
+  {
+   "text": "Hi there, grandparents asking to see the children, can you help?",
+   "label": "family"
+  },
+  {
+   "text": "Good morning, grandparents asking to see the children, what are my options?",
+   "label": "family"
+  },
+  {
+   "text": "Dear team, grandparents asking to see the children, how much would it cost to start?",
+   "label": "family"
+  },
+  {
+   "text": "Hello, a supplier breached our contract, can you help?",
+   "label": "commercial"
+  },
+  {
+   "text": "Hi there, a supplier breached our contract, what are my options?",
+   "label": "commercial"
+  },
+  {
+   "text": "Good morning, a supplier breached our contract, how much would it cost to start?",
+   "label": "commercial"
+  },
+  {
+   "text": "Dear team, a supplier breached our contract, is there a deadline?",
+   "label": "commercial"
+  },
+  {
+   "text": "Hello again, a supplier breached our contract, can we book a call?",
+   "label": "commercial"
+  },
+  {
+   "text": "Hello, a supplier breached our contract, can you help?",
+   "label": "commercial"
+  },
+  {
+   "text": "Hi there, a supplier breached our contract, what are my options?",
+   "label": "commercial"
+  },
+  {
+   "text": "Good morning, a supplier breached our contract, how much would it cost to start?",
+   "label": "commercial"
+  },
+  {
+   "text": "Dear team, a supplier breached our contract, is there a deadline?",
+   "label": "commercial"
+  },
+  {
+   "text": "Hello again, a supplier breached our contract, can we book a call?",
+   "label": "commercial"
+  },
+  {
+   "text": "Hello, a supplier breached our contract, can you help?",
+   "label": "commercial"
+  },
+  {
+   "text": "Hi there, a supplier breached our contract, what are my options?",
+   "label": "commercial"
+  },
+  {
+   "text": "Hi there, a shareholder dispute in our company, is there a deadline?",
+   "label": "commercial"
+  },
+  {
+   "text": "Good morning, a shareholder dispute in our company, can we book a call?",
+   "label": "commercial"
+  },
+  {
+   "text": "Dear team, a shareholder dispute in our company, can you help?",
+   "label": "commercial"
+  },
+  {
+   "text": "Hello again, a shareholder dispute in our company, what are my options?",
+   "label": "commercial"
+  },
+  {
+   "text": "Hello, a shareholder dispute in our company, how much would it cost to start?",
+   "label": "commercial"
+  },
+  {
+   "text": "Hi there, a shareholder dispute in our company, is there a deadline?",
+   "label": "commercial"
+  },
+  {
+   "text": "Good morning, a shareholder dispute in our company, can we book a call?",
+   "label": "commercial"
+  },
+  {
+   "text": "Dear team, a shareholder dispute in our company, can you help?",
+   "label": "commercial"
+  },
+  {
+   "text": "Hello again, a shareholder dispute in our company, what are my options?",
+   "label": "commercial"
+  },
+  {
+   "text": "Hello, a shareholder dispute in our company, how much would it cost to start?",
+   "label": "commercial"
+  },
+  {
+   "text": "Hi there, a shareholder dispute in our company, is there a deadline?",
+   "label": "commercial"
+  },
+  {
+   "text": "Good morning, a shareholder dispute in our company, can we book a call?",
+   "label": "commercial"
+  },
+  {
+   "text": "Good morning, a customer will not pay our invoices, what are my options?",
+   "label": "commercial"
+  },
+  {
+   "text": "Dear team, a customer will not pay our invoices, how much would it cost to start?",
+   "label": "commercial"
+  },
+  {
+   "text": "Hello again, a customer will not pay our invoices, is there a deadline?",
+   "label": "commercial"
+  },
+  {
+   "text": "Hello, a customer will not pay our invoices, can we book a call?",
+   "label": "commercial"
+  },
+  {
+   "text": "Hi there, a customer will not pay our invoices, can you help?",
+   "label": "commercial"
+  },
+  {
+   "text": "Good morning, a customer will not pay our invoices, what are my options?",
+   "label": "commercial"
+  },
+  {
+   "text": "Dear team, a customer will not pay our invoices, how much would it cost to start?",
+   "label": "commercial"
+  },
+  {
+   "text": "Hello again, a customer will not pay our invoices, is there a deadline?",
+   "label": "commercial"
+  },
+  {
+   "text": "Hello, a customer will not pay our invoices, can we book a call?",
+   "label": "commercial"
+  },
+  {
+   "text": "Hi there, a customer will not pay our invoices, can you help?",
+   "label": "commercial"
+  },
+  {
+   "text": "Good morning, a customer will not pay our invoices, what are my options?",
+   "label": "commercial"
+  },
+  {
+   "text": "Dear team, a customer will not pay our invoices, how much would it cost to start?",
+   "label": "commercial"
+  },
+  {
+   "text": "Dear team, terms and conditions for our online shop, can we book a call?",
+   "label": "commercial"
+  },
+  {
+   "text": "Hello again, terms and conditions for our online shop, can you help?",
+   "label": "commercial"
+  },
+  {
+   "text": "Hello, terms and conditions for our online shop, what are my options?",
+   "label": "commercial"
+  },
+  {
+   "text": "Hi there, terms and conditions for our online shop, how much would it cost to start?",
+   "label": "commercial"
+  },
+  {
+   "text": "Good morning, terms and conditions for our online shop, is there a deadline?",
+   "label": "commercial"
+  },
+  {
+   "text": "Dear team, terms and conditions for our online shop, can we book a call?",
+   "label": "commercial"
+  },
+  {
+   "text": "Hello again, terms and conditions for our online shop, can you help?",
+   "label": "commercial"
+  },
+  {
+   "text": "Hello, terms and conditions for our online shop, what are my options?",
+   "label": "commercial"
+  },
+  {
+   "text": "Hi there, terms and conditions for our online shop, how much would it cost to start?",
+   "label": "commercial"
+  },
+  {
+   "text": "Good morning, terms and conditions for our online shop, is there a deadline?",
+   "label": "commercial"
+  },
+  {
+   "text": "Dear team, terms and conditions for our online shop, can we book a call?",
+   "label": "commercial"
+  },
+  {
+   "text": "Hello again, terms and conditions for our online shop, can you help?",
+   "label": "commercial"
+  },
+  {
+   "text": "Hello again, a partnership agreement for our firm, how much would it cost to start?",
+   "label": "commercial"
+  },
+  {
+   "text": "Hello, a partnership agreement for our firm, is there a deadline?",
+   "label": "commercial"
+  },
+  {
+   "text": "Hi there, a partnership agreement for our firm, can we book a call?",
+   "label": "commercial"
+  },
+  {
+   "text": "Good morning, a partnership agreement for our firm, can you help?",
+   "label": "commercial"
+  },
+  {
+   "text": "Dear team, a partnership agreement for our firm, what are my options?",
+   "label": "commercial"
+  },
+  {
+   "text": "Hello again, a partnership agreement for our firm, how much would it cost to start?",
+   "label": "commercial"
+  },
+  {
+   "text": "Hello, a partnership agreement for our firm, is there a deadline?",
+   "label": "commercial"
+  },
+  {
+   "text": "Hi there, a partnership agreement for our firm, can we book a call?",
+   "label": "commercial"
+  },
+  {
+   "text": "Good morning, a partnership agreement for our firm, can you help?",
+   "label": "commercial"
+  },
+  {
+   "text": "Dear team, a partnership agreement for our firm, what are my options?",
+   "label": "commercial"
+  },
+  {
+   "text": "Hello again, a partnership agreement for our firm, how much would it cost to start?",
+   "label": "commercial"
+  },
+  {
+   "text": "Hello, a partnership agreement for our firm, is there a deadline?",
+   "label": "commercial"
+  },
+  {
+   "text": "Hello, a franchise agreement before we sign, can you help?",
+   "label": "commercial"
+  },
+  {
+   "text": "Hi there, a franchise agreement before we sign, what are my options?",
+   "label": "commercial"
+  },
+  {
+   "text": "Good morning, a franchise agreement before we sign, how much would it cost to start?",
+   "label": "commercial"
+  },
+  {
+   "text": "Dear team, a franchise agreement before we sign, is there a deadline?",
+   "label": "commercial"
+  },
+  {
+   "text": "Hello again, a franchise agreement before we sign, can we book a call?",
+   "label": "commercial"
+  },
+  {
+   "text": "Hello, a franchise agreement before we sign, can you help?",
+   "label": "commercial"
+  },
+  {
+   "text": "Hi there, a franchise agreement before we sign, what are my options?",
+   "label": "commercial"
+  },
+  {
+   "text": "Good morning, a franchise agreement before we sign, how much would it cost to start?",
+   "label": "commercial"
+  },
+  {
+   "text": "Dear team, a franchise agreement before we sign, is there a deadline?",
+   "label": "commercial"
+  },
+  {
+   "text": "Hello again, a franchise agreement before we sign, can we book a call?",
+   "label": "commercial"
+  },
+  {
+   "text": "Hello, a franchise agreement before we sign, can you help?",
+   "label": "commercial"
+  },
+  {
+   "text": "Hi there, a franchise agreement before we sign, what are my options?",
+   "label": "commercial"
+  },
+  {
+   "text": "Hi there, a competitor copied our product design, is there a deadline?",
+   "label": "commercial"
+  },
+  {
+   "text": "Good morning, a competitor copied our product design, can we book a call?",
+   "label": "commercial"
+  },
+  {
+   "text": "Dear team, a competitor copied our product design, can you help?",
+   "label": "commercial"
+  },
+  {
+   "text": "Hello again, a competitor copied our product design, what are my options?",
+   "label": "commercial"
+  },
+  {
+   "text": "Hello, a competitor copied our product design, how much would it cost to start?",
+   "label": "commercial"
+  },
+  {
+   "text": "Hi there, a competitor copied our product design, is there a deadline?",
+   "label": "commercial"
+  },
+  {
+   "text": "Good morning, a competitor copied our product design, can we book a call?",
+   "label": "commercial"
+  },
+  {
+   "text": "Dear team, a competitor copied our product design, can you help?",
+   "label": "commercial"
+  },
+  {
+   "text": "Hello again, a competitor copied our product design, what are my options?",
+   "label": "commercial"
+  },
+  {
+   "text": "Hello, a competitor copied our product design, how much would it cost to start?",
+   "label": "commercial"
+  },
+  {
+   "text": "Hi there, a competitor copied our product design, is there a deadline?",
+   "label": "commercial"
+  },
+  {
+   "text": "Good morning, a competitor copied our product design, can we book a call?",
+   "label": "commercial"
+  },
+  {
+   "text": "Good morning, debt recovery from a business client, what are my options?",
+   "label": "commercial"
+  },
+  {
+   "text": "Dear team, debt recovery from a business client, how much would it cost to start?",
+   "label": "commercial"
+  },
+  {
+   "text": "Hello again, debt recovery from a business client, is there a deadline?",
+   "label": "commercial"
+  },
+  {
+   "text": "Hello, debt recovery from a business client, can we book a call?",
+   "label": "commercial"
+  },
+  {
+   "text": "Hi there, debt recovery from a business client, can you help?",
+   "label": "commercial"
+  },
+  {
+   "text": "Good morning, debt recovery from a business client, what are my options?",
+   "label": "commercial"
+  },
+  {
+   "text": "Dear team, debt recovery from a business client, how much would it cost to start?",
+   "label": "commercial"
+  },
+  {
+   "text": "Hello again, debt recovery from a business client, is there a deadline?",
+   "label": "commercial"
+  },
+  {
+   "text": "Hello, debt recovery from a business client, can we book a call?",
+   "label": "commercial"
+  },
+  {
+   "text": "Hi there, debt recovery from a business client, can you help?",
+   "label": "commercial"
+  },
+  {
+   "text": "Good morning, debt recovery from a business client, what are my options?",
+   "label": "commercial"
+  },
+  {
+   "text": "Dear team, debt recovery from a business client, how much would it cost to start?",
+   "label": "commercial"
+  }
+ ]
+}

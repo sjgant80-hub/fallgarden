@@ -17,3 +17,12 @@ jobs:
           grep -q '"clean": true' verdict.txt || { echo "::error::mutants survived — the gate is not clean"; exit 1; }
       - name: the live page still carries the gated law
         run: node check-drift.mjs
+      # FallGarden Live (2026-11-09): claims sealed in live/CLAIMS.md before any code
+      - name: live — the kernel and the vendored files against their tests
+        run: node --test live/kernel.test.mjs live/vendor.test.mjs
+      - name: live — witness the kernel (must be CLEAN, nothing baselined)
+        run: |
+          node /tmp/witness/witness.mjs mutate live/kernel.mjs --timeout 120000 --cap 1000 --test node --test live/kernel.test.mjs | tee live-verdict.txt
+          grep -q '"clean": true' live-verdict.txt || { echo "::error::mutants survived in live/kernel.mjs"; exit 1; }
+      - name: live — every view's hash and every LIGHT round trip match the committed receipts
+        run: node live/tools/hashes.mjs --check

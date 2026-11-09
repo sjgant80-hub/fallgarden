@@ -1,0 +1,17 @@
+{
+ "note": "Vendored byte for byte. test checks every sha256.",
+ "files": [
+  {
+   "path": "live/vendor/light-codec.mjs",
+   "from": "sjgant80-hub/fall-kit core/vendor/light/codec.mjs @4a6acbf (itself konomi-tongue light/codec.mjs @c5ef3da)",
+   "sha256": "4f018272a05989fe8fbd0f675e0460b35365710a174a88dbf628165ef21f431d",
+   "what": "LIGHT: the lossless context-mixing codec (Thomas Frumkin's LIGHT, used with permission; this codec from konomi-tongue)"
+  },
+  {
+   "path": "live/vendor/patlib.mjs",
+   "from": "si-didy/patlib.mjs (Kar's local body), sealed 53cfed8 in Kar's pattern-library record; witness v0.6 70/70 clean",
+   "sha256": "b04c5e35a3612f353906ed84a6f0f4e316f30d645735779e191f9f9cebbfe73b",
+   "what": "the pattern library's law: the gate a rule must pass to enter the library"
+  }
+ ]
+}

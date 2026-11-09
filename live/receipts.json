@@ -1,0 +1,63 @@
+{
+ "v": 1,
+ "snapshot": "2026-11-09T03:36:34.863Z",
+ "estate": {
+  "hash": "73bf3c902e4e78a4",
+  "events": 2872,
+  "nodes": 1771,
+  "edges": 1171,
+  "ignored": 0,
+  "auditOk": true
+ },
+ "grow": {
+  "1": {
+   "hash": "c66e4eb0a45bcd5d",
+   "events": 767,
+   "kept": 1,
+   "dropped": 669,
+   "climbed": 1,
+   "ignored": 0
+  },
+  "2": {
+   "hash": "c3c6c8bc27c85c2f",
+   "events": 762,
+   "kept": 2,
+   "dropped": 663,
+   "climbed": 1,
+   "ignored": 0
+  },
+  "3": {
+   "hash": "3dd43d10ef01744b",
+   "events": 750,
+   "kept": 1,
+   "dropped": 650,
+   "climbed": 0,
+   "ignored": 0
+  }
+ },
+ "sim": {
+  "sample": {
+   "hash": "257e1cdc8a5883cb",
+   "events": 124,
+   "kept": 4,
+   "examples": 384,
+   "allMarked": true
+  },
+  "minusStep": {
+   "hash": "83b8aa4053fa10c2"
+  }
+ },
+ "light": {
+  "packets": 5275,
+  "json": 338132,
+  "light": 132309,
+  "roundtrips": 5275
+ },
+ "gate": {
+  "total": 100,
+  "killed": 100,
+  "survived": 0,
+  "ignored": 0,
+  "clean": true
+ }
+}

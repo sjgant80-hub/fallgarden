@@ -1,5 +1,9 @@
 # FallGarden
 
+Live: **https://sjgant80-hub.github.io/fallgarden/** · **FallGarden Live: https://sjgant80-hub.github.io/fallgarden/live/**
+
+**FallGarden Live** (`live/`, 2026-11-09) is the graph made alive, in three views on one engine: *your estate*, replayed from public records; *grow a company*, from one seed through the real pattern-library gate; and *your build*, a client's process as a labelled simulation. It is WebGPU with an honest 2D fallback, carries a LIGHT stream of every event, and gives the same hash on every run, which CI recomputes. Claims were sealed before code in `live/CLAIMS.md`; how to check them is in `live/tools/hashes.mjs --check`.
+
 Sovereign, file-native second brain. Obsidian-shape. Single HTML PWA.
 
 Markdown files + `[[wikilinks]]` + backlinks + force-directed graph + full-text search.
