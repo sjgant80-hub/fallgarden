@@ -125,18 +125,19 @@ footer{border-top:1px solid var(--line);padding:18px 16px;color:var(--muted);fon
     <div class="banner" id="banner" role="status"><b id="bannertext"></b></div>
     <div class="tip" id="tip"></div>
     <div class="legend" aria-label="Legend">
-      <span><i style="background:#f2d98c"></i>seed / core</span><span><i style="background:#7a9c7e"></i>organ</span>
-      <span><i style="background:#d4a052"></i>layer</span><span><i style="background:#918c80"></i>repo</span>
-      <span><i style="background:#7acc85"></i>CI green</span><span><i style="background:#d67a5a"></i>CI red</span>
-      <span><i style="background:#fad173"></i>rule kept</span><span><i style="background:#d67a5a;opacity:.6"></i>rule dropped</span>
-      <span><i style="background:#8caee6"></i>simulated</span><span>glow = stage</span>
+      <span><i style="background:#ffdb8c"></i>seed / conductor</span><span><i style="background:#6bdbb8"></i>organ</span>
+      <span><i style="background:#f29e52"></i>layer</span><span><i style="background:linear-gradient(90deg,#6b9efa,#5cd1b3,#f29e6b)"></i>repo, by family</span>
+      <span><i style="background:#5cf585"></i>CI green</span><span><i style="background:#ff4d3d"></i>failure (red)</span>
+      <span><i style="background:#ffc75c"></i>library mote (kept)</span><span><i style="background:#ff4d3d;opacity:.6"></i>dropped rule, fading</span>
+      <span><i style="background:#8caef2"></i>simulated</span><span>light = a real event</span>
     </div>
     <div class="engine" id="engine">starting…</div>
   </div>
   <div class="stream" aria-label="The LIGHT stream">
     <header><span>THE LIGHT STREAM: every event above, as the message the organs send, in LIGHT</span><span class="grow"></span>
       <span>packets <b id="c-n">0</b></span><span>JSON <b id="c-json">0</b> B</span><span>LIGHT <b id="c-light">0</b> B</span><span><b id="c-ratio">–</b> smaller</span><span><b id="c-rate">0</b>/s</span></header>
-    <div class="lines" id="lines" tabindex="0" aria-label="LIGHT lines; click one to decode it"></div>
+    <div class="lines" id="lines" tabindex="0" aria-label="LIGHT lines; hover one to read it, click one to decode it"></div>
+    <div class="decoded" id="hoverline" aria-live="polite" style="min-height:1.6em;color:var(--amber)"></div>
     <div class="decoded" id="decoded"><span class="k">decoded</span> · click any line to turn its LIGHT bytes back into the message and read it in plain words.</div>
   </div>
 </div>
@@ -157,7 +158,7 @@ footer{border-top:1px solid var(--line);padding:18px 16px;color:var(--muted);fon
   <h2>Start here</h2>
   <ol>
     <li>Press <b>▶ Play</b>. The estate grows from its first repo to today. Each node appears when that repo was created; each edge appears when both ends exist.</li>
-    <li>Watch the strip under the graph: every event is also a LIGHT line, the compressed message the organs pass. <b>Click a line</b> to decode it back into plain words; the page checks the decoded message is exactly the one sent.</li>
+    <li>Watch the strip under the graph: every event is also a LIGHT line, the compressed message the organs pass, sent at the same moment its light runs through the organism. <b>Hover a line</b> to read it in plain words and light up the cells it concerns; <b>click it</b> to decode the bytes and check the message is exactly the one sent.</li>
     <li>Hover a node to see what it is. In <b>Your estate</b>, the panel links to the repo on GitHub.</li>
     <li>Drag the <b>timeline</b> to any moment, or press <b>↺ Re-run</b>. At the end, the <b>hash</b> chip shows the final structure and the <b>receipt</b> chip says whether it matches what CI recomputed.</li>
     <li>Open <b>The Living Company</b>, pick a seed and play. Gold particles that stay are rules the gate kept. Red ones that fade are rules it dropped, and most are dropped. Organs glow brighter as they climb shadow → draft → assist → autonomous.</li>
@@ -186,9 +187,23 @@ footer{border-top:1px solid var(--line);padding:18px 16px;color:var(--muted);fon
     <li><b>The Living Company</b> runs in a worker in your tab. Each night it samples the public estate, proposes rules (the 12 most precise single words and pairs per family), and runs each through <code>vendor/patlib.mjs</code>, the pattern library's gate, byte for byte. An organ climbs one stage for each kept rule covering its family.</li>
     <li><b>Your build</b> turns your steps into organs. A step that decides something hands its cases to a gate; your example cases go through the same library gate. Every piece is marked a simulation, and the banner stays on screen while it runs.</li>
     <li><b>The LIGHT stream</b> codes each event's message with LIGHT, using <code>vendor/light-codec.mjs</code> primed with a shared dictionary. Clicking a line decodes the bytes and compares them with the message sent. The counter totals real bytes, LIGHT against JSON.</li>
-    <li><b>The layout</b> uses FallGarden's own forces (repulsion 3000/d², springs toward 60, a pull to the centre, 0.85 damping), the same constants its graph view uses. At estate scale the renderer adds a speed limit per step and gives repulsion a reach, so 1,700+ nodes stay on screen. Positions are drawing only; they are never part of the hash.</li>
+    <li><b>The layout</b> uses FallGarden's own forces (repulsion 3000/d², springs toward 60, a pull to the centre, 0.85 damping), the same constants its graph view uses, in a WebGPU compute shader every frame. At estate scale the renderer adds a speed limit per step and gives repulsion a reach, so 1,700+ nodes stay on screen. Positions are drawing only; they are never part of the hash.</li>
     <li><b>The hash</b> covers the structure (nodes, edges, CI, stages, library), never positions, because a GPU lays out positions in parallel. <code>tools/hashes.mjs</code> recomputes every view's final hash on GitHub's runner and fails the build if any differs from <code>receipts.json</code>.</li>
   </ol>
+</section>
+
+<section id="living">
+  <h2>The living visual: an organism, not a diagram</h2>
+  <p>The graph is drawn as a living thing on top of the same real state. Nothing on it moves for show: every packet, flare, ring, bud and mote is caused by one real event, and the renderer keeps a log of each one with the index of the event that caused it, so it can be checked against the events. A failure is always red.</p>
+  <div class="cards">
+    <div class="card"><h3>It breathes</h3><p>The layout runs every frame in a WebGPU compute shader: it settles, then keeps stirring and never freezes. Two things move without an event, and only these two: <b>the breath</b>, a wave leaving the heart every 6 seconds that swells each cell by up to 6% of its radius, travelling 1,400 world units a second; and <b>the tide</b>, a slow current of 0.06 units a step that turns every 23 seconds, so a region sways together.</p></div>
+    <div class="card"><h3>Work flows as light</h3><p>When one part hands work to another, a packet of light travels the vessel between them and rings on arrival. An edge that has carried more work lately (among the last 240 events) carries it faster and brighter: a quiet edge takes 1.6 s, a busy one as little as 0.55 s.</p></div>
+    <div class="card"><h3>Depth and glow</h3><p>Every cell sits at a depth: the seed and the conductor in front, the organs just behind, the repos spread over a band. Deeper cells are drawn smaller and nearer the centre in true perspective, and moving your pointer tilts the eye. Light is drawn in high dynamic range and bloomed. The faint dust behind is background, not data.</p></div>
+    <div class="card"><h3>The library is a mass</h3><p>The pattern library is a cluster of motes: 96 for every rule the gate kept, up to 4,096 (the gate is strict, so the real libraries here hold one or two rules: the mass is honest, not crowded). Each kept rule's motes fly in from the gate, so the mass densifies; each dropped rule shows one red mote at the rim that fades in 2.4 s. During a night (from Kar handing the day's cases to the gate until that night's last judgement) the mass pulses and turns.</p></div>
+    <div class="card"><h3>Organs with character</h3><p><b>Kar, the conductor</b>, fires routing lines along the vessel as it hands out work. <b>The gate</b> is an aperture that flashes green when it keeps a rule and red when it drops one. <b>The Auditor</b> is a watching eye whose iris widens when the gate judges. <b>The seed's core</b> germinates in rings and swells. A new organ buds out of its parent along a tendril and blooms; it does not pop.</p></div>
+    <div class="card"><h3>No WebGPU, no fake</h3><p>A browser without WebGPU (or with <code>?gpu=0</code>) gets the same real state on a plainer 2D canvas, and the note under the graph says so. There is no video anywhere on this page.</p></div>
+  </div>
+  <p class="muted">Claims sealed before any code: <code>live/CLAIMS-living.md</code> (U1-U5). The law (<code>live/living.mjs</code>) is mutation-gated in CI; the physics (<code>live/physics.mjs</code>) is the shader's law in plain JavaScript, tested in CI and checked against the GPU in a real browser.</p>
 </section>
 
 <section id="blueprint">

@@ -29,11 +29,11 @@ function code(ev) {
   const r = encode(json, PRIMED);
   return r.ok ? { p, json: json.length, light: r.bytes } : null;
 }
-function pushStream(ev) {
+function pushStream(ev, i) {
   const c = code(ev);
   if (!c) return;
   S.bytes.json += c.json; S.bytes.light += c.light.length;
-  S.stream.push({ ev, c });
+  S.stream.push({ ev, c, i });
   S.rate.push(performance.now());
 }
 function renderStream() {
@@ -57,6 +57,24 @@ function renderStream() {
   $('c-ratio').textContent = S.bytes.light ? (S.bytes.json / S.bytes.light).toFixed(2) + '×' : '–';
   $('c-rate').textContent = String(S.rate.length);
 }
+// hover a line: its LIGHT bytes decoded to plain words, and the cells of its event lit in the organism (each line is
+// the message of the same real event whose pulse the organism drew at that moment)
+function decodeLine(item) {
+  const out = decode(item.c.light, PRIMED);
+  if (!out.ok) return { ok: false, text: 'refused: ' + out.why };
+  const text = td.decode(out.bytes);
+  return { ok: true, same: text === JSON.stringify(item.c.p), text: K.say(JSON.parse(text)) };
+}
+$('lines').addEventListener('mouseover', (e) => {
+  const el = e.target.closest('div[data-i]');
+  if (!el || !S.engine) return;
+  const item = S.stream[Number(el.dataset.i)];
+  if (!item) return;
+  const d = decodeLine(item);
+  $('hoverline').textContent = d.ok ? d.text + (d.same ? '  ✓ exactly the message sent' : '  ✗ differs from the message sent') : d.text;
+  if (S.engine.highlight) S.engine.highlight([item.ev.a, item.ev.b, item.ev.id].filter(Boolean));
+});
+$('lines').addEventListener('mouseleave', () => { $('hoverline').textContent = ''; if (S.engine && S.engine.highlight) S.engine.highlight([]); });
 $('lines').addEventListener('click', (e) => {
   const el = e.target.closest('div[data-i]');
   if (!el) return;
@@ -110,7 +128,7 @@ function applyUpTo(k, stream) {
     K.apply(S.state, ev);
     if (parent !== undefined && S.state.nodes.has(ev.id)) S.state.nodes.get(ev.id).parent = parent;
     if (ev.t === 'born' && ev.kind === 'library') S.engine.libraryId = ev.id;
-    if (stream) { S.engine.pulse(ev, now); pushStream(ev); }
+    if (stream) { S.engine.pulse(ev, now, S.k - 1); pushStream(ev, S.k - 1); }
     S.dirty = true;
   }
 }
@@ -215,7 +233,8 @@ function receiptFor(key) {
 function engineNote() {
   const e = S.engine;
   const hidden = e.kind === 'canvas2d' && e.hidden ? ' · this 2D view lays out ' + e.ids.length.toLocaleString() + ' nodes; the ' + e.hidden.toLocaleString() + ' scaffold repos are left out (the GPU view draws every node)' : '';
-  $('engine').textContent = (e.kind === 'webgpu' ? 'WebGPU: FallGarden\'s forces on your GPU, every node' : 'No WebGPU here: the same real state on a 2D canvas') + hidden;
+  $('engine').textContent = (e.kind === 'webgpu' ? 'WebGPU · the living organism: FallGarden\'s forces in a compute shader every frame, every node, with bloom and depth; every light is a real event'
+    : 'No WebGPU here: the same real state on a plainer 2D canvas (no video, no stand-in)') + hidden;
 }
 function fillFacts() {
   const c = S.snap.counts;
@@ -239,7 +258,10 @@ function fillBlueprint() {
     ['dict.mjs', 'The shared dictionary the stream is coded with, so a line decodes the same in your tab and on the runner.', 'used by the page and by tools/hashes.mjs'],
     ['data/estate.json', 'The public snapshot: repos and creation dates as GitHub lists them, Kar\'s map, layers, Liveware\'s receipts, recent CI, the library\'s nights.', 'written by tools/snapshot.mjs, which refuses to write anything private'],
     ['data/sample-process.json', 'The example law firm for Your build. Its enquiries are synthetic, written from templates by tools/sample.mjs.', 'labelled synthetic in the file and on the page'],
-    ['engine.mjs', 'The renderer: a WGSL compute shader runs FallGarden\'s forces over every node; nodes, edges and library particles are GPU instances. The fallback is a 2D canvas.', 'draws state; never invents it'],
+    ['engine.mjs', 'Chooses the renderer: the living organism when this browser has WebGPU, else the plainer 2D canvas, which says so.', 'every branch of the detector tested (U5)'],
+    ['organism.mjs', 'The living organism: the layout in a WebGPU compute shader every frame; cells, vessels, packets of light, organ shapes, the library\'s mass and the dust behind, all GPU instances; HDR bloom, depth in perspective, ACES tone map.', 'draws state, never invents it; its frame cost and the GPU-equals-law check run in the browser (U1)'],
+    ['living.mjs', 'The law of the living visual: what each real event makes the organism do, each organ\'s character, each cell\'s depth, the library\'s motes, and the only motion without an event: the breath and the tide.', S.receipts && S.receipts.living ? `mutation gate: ${S.receipts.living.killed}/${S.receipts.living.total} caught, ${S.receipts.living.ignored} baselined` : 'mutation-gated in CI'],
+    ['physics.mjs', 'The compute shader\'s law in plain JavaScript, rounded to 32 bits as the GPU rounds: FallGarden\'s forces (tested equal to the kernel\'s layoutStep), plus the tide.', 'tested in CI; the GPU checked equal to it in the browser (U1c)'],
     ['grow-worker.mjs', 'Runs the growth and the simulation off the main thread, so the gate\'s work never freezes the page.', 'same kernel as CI'],
     ['vendor/mintcase.mjs + vendor/basis.json', 'The cost case for one process, byte for byte from Liveware: staff time today, the two rented routes and owning it, from sourced figures and your own inputs.', 'witness 21/0 in Liveware; SHA-256 pinned here'],
     ['tools/hashes.mjs', 'Recomputes every view\'s final hash and every packet\'s round trip; with --check it fails the build on any difference.', 'runs on GitHub\'s runner on every push'],
@@ -326,6 +348,7 @@ function wire() {
     const dpr = $('gl').width / $('gl').clientWidth;
     if (drag) { S.engine.cam.manual = true; S.engine.cam.x = drag.cx - ((e.clientX - drag.x) * dpr) / S.engine.cam.zoom; S.engine.cam.y = drag.cy - ((e.clientY - drag.y) * dpr) / S.engine.cam.zoom; return; }
     const r = stage.getBoundingClientRect();
+    if (S.engine.pointer) S.engine.pointer(e.clientX - r.left, e.clientY - r.top);
     const id = S.engine.nearest((e.clientX - r.left) * dpr, (e.clientY - r.top) * dpr);
     S.engine.hover = id;
     const n = id && S.state.nodes.get(id);
@@ -362,7 +385,7 @@ async function main() {
   for (const id of ['c-hours', 'c-share', 'c-seats', 'c-cases', 'c-years']) $(id).addEventListener('input', renderCost);
   fillForm(sample); fillFacts(); fillBlueprint();
   S.engine = await createEngine($('gl'), $('overlay'), { gpu: qs.get('gpu') === '0' ? false : undefined });
-  window.__live = { S, K, CPU_CAP };
+  window.__live = { S, K, CPU_CAP, R: S.engine.R || null };
   wire();
   const v = qs.get('view');
   await setView(v === 'grow' || v === 'company' ? 'grow' : v === 'build' ? 'build' : 'estate');

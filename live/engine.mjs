@@ -1,9 +1,13 @@
 // fallgarden · live/engine.mjs — the renderer. It draws the kernel's state; it never invents any. Two paths:
-//   · WebGPU: FallGarden's own forces (kernel PHYS) in a compute shader over every node, nodes / edges / library particles
-//     as instanced GPU geometry, positions read back a few times a second for labels and hover
+//   · WebGPU: the living organism (organism.mjs, 2026-11-09): FallGarden's own forces (kernel PHYS) in a compute shader
+//     over every node, every frame; bloom, depth, packets of light, organs with character, the library as a mass; every
+//     motion but the breath and the tide is caused by a real event (live/CLAIMS-living.md)
 //   · 2D canvas: the same state with kernel.layoutStep on the CPU (capped to the nodes a CPU can lay out), plainer
 // The engine owns positions only. What exists, what is lit and what pulses always comes from the state it is given.
 import K from './kernel.mjs';
+import Lv from './living.mjs';
+import Ph from './physics.mjs';
+import { createOrganism } from './organism.mjs';
 
 const COLORS = {
   core: [0.95, 0.85, 0.55], organ: [0.48, 0.61, 0.49], layer: [0.83, 0.63, 0.32], library: [0.95, 0.75, 0.40], repo: [0.57, 0.55, 0.50],
@@ -21,9 +25,11 @@ export const styleOf = (n) => {
   return { rgb: base, r, glow: Math.max(STAGE_GLOW[n.stage] || 0, n.run === 'running' ? 0.95 : 0) };
 };
 
-export async function webgpuAvailable(force) {
+/** webgpuAvailable(force, nav) → is there a real WebGPU adapter here (U5)? false when forced off, when the browser has no
+ *  navigator.gpu, and when requestAdapter gives nothing or throws. */
+export async function webgpuAvailable(force, nav = typeof navigator === 'undefined' ? undefined : navigator) {
   if (force === false) return false;
-  try { return !!(navigator.gpu && (await navigator.gpu.requestAdapter())); } catch { return false; }
+  try { return !!(nav && nav.gpu && (await nav.gpu.requestAdapter())); } catch { return false; }
 }
 
 // ── the common part: slots, spawn positions, pulses and particles ─────────────────────────────────────────────────
@@ -78,172 +84,86 @@ function base(canvas, overlay) {
   };
 }
 
-// ── WebGPU ─────────────────────────────────────────────────────────────────────────────────────────────────────────────
-const SIM_WGSL = /* wgsl */`
-struct Params { count: u32, w: f32, h: f32, repel: f32, rest: f32, spring: f32, center: f32, damp: f32, vmax: f32, reach2: f32, pad0: f32, pad1: f32 };
-@group(0) @binding(0) var<uniform> P: Params;
-@group(0) @binding(1) var<storage, read> pin: array<vec4f>;
-@group(0) @binding(2) var<storage, read_write> pout: array<vec4f>;
-@group(0) @binding(3) var<storage, read> off: array<u32>;
-@group(0) @binding(4) var<storage, read> nbr: array<u32>;
-@compute @workgroup_size(64) fn main(@builtin(global_invocation_id) g: vec3u) {
-  let i = g.x;
-  if (i >= P.count) { return; }
-  let a = pin[i].xy;
-  var v = pin[i].zw;
-  for (var j = 0u; j < P.count; j++) {
-    if (j == i) { continue; }
-    let d = pin[j].xy - a; let d2 = dot(d, d) + 0.01;
-    if (d2 > P.reach2) { continue; }
-    let dd = sqrt(d2);
-    v -= d / dd * (P.repel / d2);
-  }
-  for (var k = off[i]; k < off[i + 1u]; k++) {
-    let d = pin[nbr[k]].xy - a; let dd = length(d) + 0.01;
-    v += d / dd * ((dd - P.rest) * P.spring);
-  }
-  v += (vec2f(P.w * 0.5, P.h * 0.5) - a) * P.center;
-  v *= P.damp;
-  let sp = length(v);
-  if (sp > P.vmax) { v = v * (P.vmax / sp); }
-  pout[i] = vec4f(a + v, v);
-}`;
-const DRAW_WGSL = /* wgsl */`
-struct Cam { sx: f32, sy: f32, ox: f32, oy: f32 };
-@group(0) @binding(0) var<uniform> C: Cam;
-@group(0) @binding(1) var<storage, read> pos: array<vec4f>;
-@group(0) @binding(2) var<storage, read> sty: array<vec4f>;
-@group(0) @binding(3) var<storage, read> glow: array<f32>;
-@group(0) @binding(4) var<storage, read> edges: array<u32>;
-@group(0) @binding(5) var<storage, read> epulse: array<f32>;
-@group(0) @binding(6) var<storage, read> parts: array<vec4f>;
-@group(0) @binding(7) var<storage, read> pcol: array<vec4f>;
-struct VO { @builtin(position) p: vec4f, @location(0) uv: vec2f, @location(1) col: vec4f };
-fn clip(w: vec2f) -> vec4f { return vec4f(w.x * C.sx + C.ox, w.y * C.sy + C.oy, 0.0, 1.0); }
-const Q = array<vec2f, 6>(vec2f(-1.0, -1.0), vec2f(1.0, -1.0), vec2f(-1.0, 1.0), vec2f(-1.0, 1.0), vec2f(1.0, -1.0), vec2f(1.0, 1.0));
-@vertex fn nodeVS(@builtin(vertex_index) vi: u32, @builtin(instance_index) ii: u32) -> VO {
-  let s = sty[ii]; let g = glow[ii]; let r = s.w * (1.0 + g * 1.6);
-  var o: VO; o.p = clip(pos[ii].xy + Q[vi] * r); o.uv = Q[vi]; o.col = vec4f(s.rgb, g); return o;
+// ── WebGPU: the living organism (organism.mjs, the FallGarden profile) ─────────────────────────────────────────────
+// The Living Visual (2026-11-09, live/CLAIMS-living.md): the same state, drawn as an organism. FallGarden's forces run
+// in a compute shader every frame (physics.mjs is their law, U1c); every packet, flare, bud and mote is the effect of
+// one real event (living.effectsOf, U2); the library is a mass (U3); a failure is red (U4).
+const FAMILY = [[0.42, 0.62, 0.98], [0.36, 0.82, 0.7], [0.95, 0.62, 0.42], [0.72, 0.52, 0.98], [0.38, 0.76, 0.95], [0.96, 0.78, 0.42],
+  [0.55, 0.85, 0.45], [0.95, 0.52, 0.66], [0.4, 0.7, 0.66], [0.82, 0.72, 0.6], [0.68, 0.48, 0.78], [0.48, 0.6, 0.84]];
+const LOOK = { heart: [1.0, 0.86, 0.55], conductor: [1.0, 0.84, 0.52], gate: [0.55, 0.9, 1.0], auditor: [0.8, 0.65, 1.0], library: [1.0, 0.8, 0.36], night: [1.0, 0.66, 0.32], layer: [0.95, 0.62, 0.32], organ: [0.42, 0.86, 0.72] };
+const mixc = (a, b, t) => [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t];
+/** lookOf(node, degree) → how a cell looks in the organism: a simulation in its own blue, a failure red, a repo in its
+ *  family's colour (green-tinted when its CI is green), each organ in its character's colour, brighter as it climbs. */
+export function lookOf(n, degree = 0) {
+  const ch = Lv.characterOf(n), kind = n.kind;
+  const base = n.sim ? COLORS.sim : ch !== 'plain' ? LOOK[ch] : kind === 'layer' ? LOOK.layer : kind === 'organ' ? LOOK.organ : mixc(FAMILY[fnv(String(n.fam || '')) % FAMILY.length], [1, 1, 1], 0.15);
+  const rgb = Lv.isFailed(n) ? [1.0, 0.3, 0.24] : n.ci === 'green' && kind === 'repo' ? mixc(base, COLORS.green, 0.45) : base;
+  const r = ch === 'heart' ? 15 : ch === 'conductor' ? 13 : ch === 'library' ? 11 : ch === 'gate' || ch === 'auditor' ? 10 : kind === 'layer' ? 10 : kind === 'organ' ? 9 : 7 + Math.min(9, 1.4 * Math.sqrt(Math.max(0, degree)));
+  const glow = (ch === 'heart' || ch === 'conductor' ? 1 : ch !== 'plain' ? 0.9 : kind === 'layer' ? 0.75 : kind === 'organ' ? 0.7 : 0.42) + (STAGE_GLOW[n.stage] || 0) * 0.5;
+  return { rgb, r, glow };
 }
-@fragment fn nodeFS(i: VO) -> @location(0) vec4f {
-  let d = length(i.uv); if (d > 1.0) { discard; }
-  let core = smoothstep(0.62, 0.48, d); let halo = (1.0 - d) * i.col.a;
-  let a = clamp(core + halo, 0.0, 1.0);
-  return vec4f(i.col.rgb * a, a);
-}
-@vertex fn edgeVS(@builtin(vertex_index) vi: u32) -> VO {
-  let e = vi / 2u; let n = edges[vi]; let p = epulse[e];
-  var o: VO; o.p = clip(pos[n].xy); o.uv = vec2f(0.0);
-  o.col = mix(vec4f(0.91, 0.89, 0.86, 0.10), vec4f(0.83, 0.63, 0.32, 0.95), p); return o;
-}
-@fragment fn edgeFS(i: VO) -> @location(0) vec4f { return vec4f(i.col.rgb * i.col.a, i.col.a); }
-@vertex fn partVS(@builtin(vertex_index) vi: u32, @builtin(instance_index) ii: u32) -> VO {
-  let q = parts[ii];
-  var o: VO; o.p = clip(q.xy + Q[vi] * q.z); o.uv = Q[vi]; o.col = vec4f(pcol[ii].rgb, q.w); return o;
-}
-@fragment fn partFS(i: VO) -> @location(0) vec4f {
-  let d = length(i.uv); if (d > 1.0) { discard; }
-  let a = (1.0 - d) * i.col.a; return vec4f(i.col.rgb * a, a);
-}`;
-
 async function makeGPU(canvas, overlay) {
-  const adapter = await navigator.gpu.requestAdapter();
-  const device = await adapter.requestDevice();
-  const ctx = canvas.getContext('webgpu');
-  const format = navigator.gpu.getPreferredCanvasFormat();
-  ctx.configure({ device, format, alphaMode: 'premultiplied' });
-  const S = base(canvas, overlay);
-  S.kind = 'webgpu';
-  const U = GPUBufferUsage;
-  const buf = (size, usage) => device.createBuffer({ size: Math.max(16, Math.ceil(size / 16) * 16), usage });
-  const sim = device.createComputePipeline({ layout: 'auto', compute: { module: device.createShaderModule({ code: SIM_WGSL }), entryPoint: 'main' } });
-  const mod = device.createShaderModule({ code: DRAW_WGSL });
-  const blend = { color: { srcFactor: 'one', dstFactor: 'one-minus-src-alpha' }, alpha: { srcFactor: 'one', dstFactor: 'one-minus-src-alpha' } };
-  const draw = (vs, fs, topology) => device.createRenderPipeline({ layout: 'auto', vertex: { module: mod, entryPoint: vs }, fragment: { module: mod, entryPoint: fs, targets: [{ format, blend }] }, primitive: { topology } });
-  const nodeP = draw('nodeVS', 'nodeFS', 'triangle-list'), edgeP = draw('edgeVS', 'edgeFS', 'line-list'), partP = draw('partVS', 'partFS', 'triangle-list');
-  const params = buf(48, U.UNIFORM | U.COPY_DST), cam = buf(16, U.UNIFORM | U.COPY_DST);
-  let cap = 0, ecap = 0, pA, pB, styB, glowB, offB, nbrB, edgeB, epB, partB, pcolB, rb, flip = false, reading = false, frame = 0;
-  let edgeList = [];
-  const PCAP = 1024;
-  partB = buf(PCAP * 16, U.STORAGE | U.COPY_DST); pcolB = buf(PCAP * 16, U.STORAGE | U.COPY_DST);
-  function alloc(n, e) {
-    cap = Math.max(1, n); ecap = Math.max(1, e);
-    pA = buf(cap * 16, U.STORAGE | U.COPY_DST | U.COPY_SRC); pB = buf(cap * 16, U.STORAGE | U.COPY_DST | U.COPY_SRC);
-    styB = buf(cap * 16, U.STORAGE | U.COPY_DST); glowB = buf(cap * 4, U.STORAGE | U.COPY_DST);
-    offB = buf((cap + 1) * 4, U.STORAGE | U.COPY_DST); nbrB = buf(ecap * 2 * 4, U.STORAGE | U.COPY_DST);
-    edgeB = buf(ecap * 2 * 4, U.STORAGE | U.COPY_DST); epB = buf(ecap * 4, U.STORAGE | U.COPY_DST);
-    rb = device.createBuffer({ size: Math.max(16, cap * 16), usage: U.MAP_READ | U.COPY_DST });
-    S.pos = new Float32Array(cap * 4);
-  }
-  S.reset = (nodeCap, edgeCap) => { alloc(nodeCap, edgeCap); S.ids = []; S.slot = new Map(); edgeList = []; S.particles = []; S.pulseNode.clear(); S.pulseEdge.clear(); S.cam.manual = false; };
+  const R = await createOrganism(canvas, overlay, { profile: 'fallgarden' });
+  if (!R) throw new Error('no WebGPU adapter');
+  const S = { kind: 'webgpu', R, ids: [], slot: new Map(), cam: R.cam, labels: true, libraryId: undefined, hidden: 0, pending: [], activity: Lv.createActivity(), keys: new Set(), pairs: [], weights: [], state: null, hoverId: null };
+  Object.defineProperty(S, 'pos', { get: () => R.pos });
+  Object.defineProperty(S, 'W', { get: () => R.W });
+  Object.defineProperty(S, 'H', { get: () => R.H });
+  Object.defineProperty(S, 'hover', {
+    get: () => S.hoverId,
+    set: (id) => {
+      if (id === S.hoverId) return;
+      S.hoverId = id;
+      if (!id || !S.state || !S.slot.has(id)) { R.setLit(null, -1); return; }
+      const lit = new Set([id]);
+      for (const e of S.state.edges.values()) { if (e.a === id) lit.add(e.b); else if (e.b === id) lit.add(e.a); }
+      R.setLit(lit, S.slot.get(id));
+    },
+  });
+  R.labelFn = (v) => (v.label.length > 34 ? v.label.slice(0, 32) + '…' : v.label) + (v.stage && v.stage !== 'shadow' ? ' · ' + v.stage : '');
+  S.reset = () => { R.clear(); S.ids = []; S.slot = new Map(); S.keys = new Set(); S.pairs = []; S.weights = []; S.pending = []; S.activity = Lv.createActivity(); S.hoverId = null; };
+  const ctxOf = (state) => ({
+    has: (id) => S.slot.has(id), character: (id) => Lv.characterOf(state.nodes.get(id)), parent: (id) => { const n = state.nodes.get(id); return n ? n.parent : undefined; },
+    activity: (a, b) => S.activity.of(a, b), tint: (e) => (e.sim === true ? COLORS.sim : null),
+    judge: ['gate', 'their-gate'].find((g) => S.slot.has(g)) || S.libraryId, heart: ['fall-core', 'their-core'].find((g) => S.slot.has(g)), live: false,
+  });
   S.sync = (state) => {
-    // new nodes → slots, spawned next to their parent; their position goes to both buffers
-    for (const n of state.nodes.values()) {
-      if (S.slot.has(n.id) || S.ids.length >= cap) continue;
-      const i = S.ids.length, parent = n.parent;
-      const [x, y] = S.spawnAt(n.id, parent);
-      S.ids.push(n.id); S.slot.set(n.id, i);
-      S.pos.set([x, y, 0, 0], i * 4);
-      const v = new Float32Array([x, y, 0, 0]);
-      device.queue.writeBuffer(pA, i * 16, v); device.queue.writeBuffer(pB, i * 16, v);
+    S.state = state;
+    const deg = new Map();
+    for (const e of state.edges.values()) { deg.set(e.a, (deg.get(e.a) || 0) + 1); deg.set(e.b, (deg.get(e.b) || 0) + 1); }
+    for (const n of state.nodes.values()) if (!S.slot.has(n.id)) { S.slot.set(n.id, S.ids.length); S.ids.push(n.id); }
+    const list = S.ids.map((id, i) => {
+      const n = state.nodes.get(id), look = lookOf(n, deg.get(id) || 0);
+      let home = null;
+      if (i >= R.n) {
+        const p = n.parent !== undefined && S.slot.has(n.parent) && S.slot.get(n.parent) < R.n ? S.slot.get(n.parent) : -1;
+        home = p >= 0 ? Ph.besideParent(id, R.pos[p * 4], R.pos[p * 4 + 1], 18, 30) : Ph.besideParent(id, R.W / 2, R.H / 2, 18, 30);
+      }
+      return { id, role: n.kind, hub: n.kind !== 'repo', color: look.rgb, r: look.r, glow: look.glow, flags: n.run === 'running' ? 4 : 0, label: n.label, stage: n.stage,
+        z: Lv.depthOf(n), character: Lv.characterOf(n), failed: Lv.isFailed(n), phys: {}, home };
+    });
+    R.setNodes(list, performance.now());
+    if (state.edges.size !== S.keys.size) {
+      let added = 0;
+      for (const [key, e] of state.edges) {
+        if (S.keys.has(key) || !S.slot.has(e.a) || !S.slot.has(e.b)) continue;
+        S.keys.add(key); S.pairs.push(S.slot.get(e.a), S.slot.get(e.b));
+        const ka = state.nodes.get(e.a).kind, kb = state.nodes.get(e.b).kind;
+        S.weights.push(ka === 'repo' && kb === 'repo' ? 0.1 : ka === 'layer' || kb === 'layer' ? 0.09 : 0.16); added++;
+      }
+      if (added) R.setEdges(new Uint32Array(S.pairs), new Float32Array(S.weights), null);
     }
-    const sty = new Float32Array(S.ids.length * 4);
-    S.ids.forEach((id, i) => { const st = styleOf(state.nodes.get(id)); sty.set([...st.rgb, st.r], i * 4); });
-    if (sty.length) device.queue.writeBuffer(styB, 0, sty);
-    if (state.edges.size !== edgeList.length) {
-      edgeList = [...state.edges.values()].filter((e) => S.slot.has(e.a) && S.slot.has(e.b)).slice(0, ecap);
-      const deg = new Uint32Array(S.ids.length + 1), idx = new Uint32Array(edgeList.length * 2);
-      edgeList.forEach((e, k) => { const a = S.slot.get(e.a), b = S.slot.get(e.b); idx[k * 2] = a; idx[k * 2 + 1] = b; deg[a + 1]++; deg[b + 1]++; });
-      for (let i = 1; i < deg.length; i++) deg[i] += deg[i - 1];
-      const fill = deg.slice(), nb = new Uint32Array(edgeList.length * 2);
-      edgeList.forEach((e) => { const a = S.slot.get(e.a), b = S.slot.get(e.b); nb[fill[a]++] = b; nb[fill[b]++] = a; });
-      device.queue.writeBuffer(offB, 0, deg); if (nb.length) device.queue.writeBuffer(nbrB, 0, nb); if (idx.length) device.queue.writeBuffer(edgeB, 0, idx);
-    }
+    const ctx = ctxOf(state);
+    for (const p of S.pending.splice(0)) R.play(Lv.effectsOf(p.ev, p.i, ctx), p.now);
+    // a jump on the timeline replays quietly: the mass is then set from the kernel's own count of kept rules (U3)
+    if (R.motes !== Lv.massOf(state.library.kept.length)) R.setMass(state.library.kept.length);
   };
-  S.frame = (state, now, dt) => {
-    const n = S.ids.length;
-    S.W = canvas.width; S.H = canvas.height;
-    device.queue.writeBuffer(params, 0, new Uint32Array([n]));
-    device.queue.writeBuffer(params, 4, new Float32Array([S.W, S.H, K.PHYS.repel, K.PHYS.rest, K.PHYS.spring, K.PHYS.center, K.PHYS.damp, SCALE.vmax, SCALE.reach * SCALE.reach, 0, 0]));
-    // glow = stage + recent pulses; edge pulses decay over 1.2 s
-    const glow = new Float32Array(Math.max(1, n));
-    S.ids.forEach((id, i) => { const nd = state.nodes.get(id); const t = S.pulseNode.get(id); glow[i] = Math.max(STAGE_GLOW[nd.stage] || 0, t ? Math.max(0, 1 - (now - t) / 1200) : 0) + (S.hover === id ? 0.8 : 0); });
-    device.queue.writeBuffer(glowB, 0, glow);
-    const ep = new Float32Array(Math.max(1, edgeList.length));
-    edgeList.forEach((e, k) => { const t = S.pulseEdge.get(K.edgeKey(e.a, e.b)); ep[k] = t ? Math.max(0, 1 - (now - t) / 1200) : 0; });
-    device.queue.writeBuffer(epB, 0, ep);
-    const plist = S.particleList(now).slice(0, PCAP);
-    if (plist.length) {
-      const pp = new Float32Array(plist.length * 4), pc = new Float32Array(plist.length * 4);
-      plist.forEach((q, i) => { pp.set([q[0], q[1], q[2], q[3]], i * 4); pc.set(q[4] ? [0.98, 0.82, 0.45, 1] : [0.84, 0.48, 0.35, 1], i * 4); });
-      device.queue.writeBuffer(partB, 0, pp); device.queue.writeBuffer(pcolB, 0, pc);
-    }
-    S.fit(dt);
-    const sx = (2 * S.cam.zoom) / S.W, sy = (-2 * S.cam.zoom) / S.H;
-    device.queue.writeBuffer(cam, 0, new Float32Array([sx, sy, -S.cam.x * sx, -S.cam.y * sy]));
-    const enc = device.createCommandEncoder();
-    const src = flip ? pB : pA, dst = flip ? pA : pB;
-    if (n) {
-      const cp = enc.beginComputePass();
-      cp.setPipeline(sim);
-      cp.setBindGroup(0, device.createBindGroup({ layout: sim.getBindGroupLayout(0), entries: [params, src, dst, offB, nbrB].map((b, i) => ({ binding: i, resource: { buffer: b } })) }));
-      cp.dispatchWorkgroups(Math.ceil(n / 64));
-      cp.end();
-    }
-    const view = ctx.getCurrentTexture().createView();
-    const rp = enc.beginRenderPass({ colorAttachments: [{ view, loadOp: 'clear', storeOp: 'store', clearValue: { r: 0.102, g: 0.102, b: 0.118, a: 1 } }] });
-    const bg = (pipe, entries) => device.createBindGroup({ layout: pipe.getBindGroupLayout(0), entries: entries.map(([binding, buffer]) => ({ binding, resource: { buffer } })) });
-    if (edgeList.length) { rp.setPipeline(edgeP); rp.setBindGroup(0, bg(edgeP, [[0, cam], [1, dst], [4, edgeB], [5, epB]])); rp.draw(edgeList.length * 2); }
-    if (n) { rp.setPipeline(nodeP); rp.setBindGroup(0, bg(nodeP, [[0, cam], [1, dst], [2, styB], [3, glowB]])); rp.draw(6, n); }
-    if (plist.length) { rp.setPipeline(partP); rp.setBindGroup(0, bg(partP, [[0, cam], [6, partB], [7, pcolB]])); rp.draw(6, plist.length); }
-    rp.end();
-    const readNow = n && !reading && frame % 6 === 0;
-    if (readNow) enc.copyBufferToBuffer(dst, 0, rb, 0, n * 16);
-    device.queue.submit([enc.finish()]);
-    if (readNow) { reading = true; rb.mapAsync(GPUMapMode.READ, 0, n * 16).then(() => { S.pos.set(new Float32Array(rb.getMappedRange(0, n * 16)).slice()); rb.unmap(); reading = false; }).catch(() => { reading = false; }); }
-    flip = !flip; frame++;
-    drawLabels(S, state);
-  };
+  S.pulse = (ev, now, i) => { S.activity.see(ev); if (Number.isSafeInteger(i)) S.pending.push({ ev, i, now }); };
+  S.frame = (state, now) => { R.labelsOn = S.labels; R.frame(now); };
+  S.nearest = (cx, cy) => { const i = R.pick(cx / R.dpr, cy / R.dpr); return i >= 0 ? S.ids[i] : null; };
+  S.pointer = (x, y) => R.pointer(x, y);
+  S.highlight = (ids) => { const lit = new Set((ids || []).filter((id) => S.slot.has(id))); R.setLit(lit.size ? lit : null, lit.size ? S.slot.get([...lit][0]) : -1); };
+  S.toWorld = (cx, cy) => [(cx - R.W / 2) / R.cam.zoom + R.cam.x, (cy - R.H / 2) / R.cam.zoom + R.cam.y];
   return S;
 }
 
@@ -319,4 +239,4 @@ export async function createEngine(canvas, overlay, opts = {}) {
   if (await webgpuAvailable(opts.gpu)) { try { return await makeGPU(canvas, overlay); } catch (e) { console.warn('WebGPU failed, using the 2D canvas:', e); } }
   return make2D(canvas, overlay);
 }
-export default { createEngine, webgpuAvailable, styleOf, CPU_CAP, SCALE };
+export default { createEngine, webgpuAvailable, styleOf, lookOf, CPU_CAP, SCALE };

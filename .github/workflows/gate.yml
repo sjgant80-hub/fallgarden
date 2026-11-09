@@ -26,3 +26,10 @@ jobs:
           grep -q '"clean": true' live-verdict.txt || { echo "::error::mutants survived in live/kernel.mjs"; exit 1; }
       - name: live — every view's hash and every LIGHT round trip match the committed receipts
         run: node live/tools/hashes.mjs --check
+      # The Living Visual (2026-11-09): claims U1-U5 sealed in live/CLAIMS-living.md before any code
+      - name: living — the law, the physics mirror and the detector against their tests
+        run: node --test live/living.test.mjs live/physics.test.mjs live/engine.test.mjs
+      - name: living — witness the living law (must be CLEAN, nothing baselined)
+        run: |
+          node /tmp/witness/witness.mjs mutate live/living.mjs --timeout 60000 --cap 1000 --test node --test live/living.test.mjs | tee living-verdict.txt
+          grep -q '"clean": true' living-verdict.txt || { echo "::error::mutants survived in live/living.mjs"; exit 1; }

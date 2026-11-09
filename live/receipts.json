@@ -53,6 +53,13 @@
   "light": 132309,
   "roundtrips": 5275
  },
+ "living": {
+  "total": 144,
+  "killed": 144,
+  "survived": 0,
+  "ignored": 0,
+  "clean": true
+ },
  "gate": {
   "total": 104,
   "killed": 104,

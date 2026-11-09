@@ -53,6 +53,12 @@ if (gi > 0) {
   const s = readFileSync(process.argv[gi + 1], 'utf8'), j = JSON.parse(s.slice(s.indexOf('{'), s.lastIndexOf('}') + 1));
   out.gate = { total: j.total, killed: j.killed, survived: j.survived.length, ignored: j.ignored.length, clean: j.clean };
 }
+// the Living Visual's law (live/living.mjs, CLAIMS-living.md): its witness verdict, recorded like the kernel's
+const li = process.argv.indexOf('--living-log');
+if (li > 0) {
+  const s = readFileSync(process.argv[li + 1], 'utf8'), j = JSON.parse(s.slice(s.indexOf('{'), s.lastIndexOf('}') + 1));
+  out.living = { total: j.total, killed: j.killed, survived: j.survived.length, ignored: j.ignored.length, clean: j.clean };
+}
 const problems = [];
 if (!audit.ok) problems.push('G4: ' + audit.bad.slice(0, 5).join(', '));
 if (e.ignored || Object.values(grow).some((g) => g.ignored) || sr.ignored) problems.push('an event could not be applied to real state');
@@ -63,13 +69,13 @@ if (light.roundtrips !== light.packets) problems.push('G7: ' + (light.packets - 
 
 if (process.argv.includes('--check')) {
   const want = JSON.parse(readFileSync(here('receipts.json'), 'utf8'));
-  const strip = (r) => { const c = { ...r }; delete c.gate; return JSON.stringify(c); };
+  const strip = (r) => { const c = { ...r }; delete c.gate; delete c.living; return JSON.stringify(c); };
   if (strip(want) !== strip(out)) problems.push('the receipts differ from what this run computed');
   if (problems.length) { console.error('RECEIPTS FAIL\n' + problems.join('\n') + '\nwant ' + strip(want) + '\ngot  ' + strip(out)); process.exit(1); }
   console.log('receipts hold: estate ' + out.estate.hash + ' · seeds ' + [1, 2, 3].map((s) => out.grow[s].hash).join(' ') + ' · sample ' + out.sim.sample.hash + ' · ' + light.roundtrips + '/' + light.packets + ' LIGHT round trips');
 } else {
   if (problems.length) { console.error('NOT WRITTEN\n' + problems.join('\n')); process.exit(1); }
-  if (gi < 0) { try { const old = JSON.parse(readFileSync(here('receipts.json'), 'utf8')); if (old.gate) out.gate = old.gate; } catch { /* first write */ } }
+  try { const old = JSON.parse(readFileSync(here('receipts.json'), 'utf8')); if (gi < 0 && old.gate) out.gate = old.gate; if (li < 0 && old.living) out.living = old.living; } catch { /* first write */ }
   writeFileSync(here('receipts.json'), JSON.stringify(out, null, 1) + '\n');
   console.log(JSON.stringify(out, null, 1));
 }
