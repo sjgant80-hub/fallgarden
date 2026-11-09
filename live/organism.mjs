@@ -479,6 +479,8 @@ export async function createOrganism(canvas, overlay, opts = {}) {
   R.clear = () => {
     R.setNodes([], performance.now()); R.n = 0; R.world.n = 0; R.m = 0; R.lights = []; R.rings = []; R.ambient = []; R.effectLog = [];
     R.motes = 0; R.moteBorn = []; R.red = []; R.night = { on: false, until: 0, open: false }; R.alpha = 1; R.cam.manual = false; R.cam.glide = null; R.focus = -1; R.lit = null; R.dust = null; R.fitCache = null;
+    // a clear starts from nothing, so the same events after a clear always draw the same frames (Build Broadcast's B4)
+    Object.assign(R.cam, { x: 0, y: -120, zoom: 0.35 }); R.tilt = [0, 0]; R.tiltTo = [0, 0]; R.spin = 0; R.warm = 0; R.steps = 0; frame = 0; flip = false; last = null; stepNow = false;
   };
   R.setLit = (lit, hover) => { R.lit = lit instanceof Set && lit.size ? lit : null; R.hover = typeof hover === 'number' ? hover : -1; };
   R.setAmbient = (items) => { R.ambient = Array.isArray(items) ? items : []; };
@@ -747,7 +749,7 @@ export async function createOrganism(canvas, overlay, opts = {}) {
   let last = performance.now(), stepNow = false;
   R.frame = (now) => {
     if (lost) return;
-    const dt = Math.min(0.1, Math.max(0, (now - last) / 1000)); last = now;
+    const dt = last === null ? 0 : Math.min(0.1, Math.max(0, (now - last) / 1000)); last = now;
     R.frames.push(now); while (R.frames.length && now - R.frames[0] > 2000) R.frames.shift();
     R.resize(); camera(dt);
     if (!bufs.pA) grow(64);
