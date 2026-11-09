@@ -83,10 +83,11 @@ footer{border-top:1px solid var(--line);padding:18px 16px;color:var(--muted);fon
   <span class="brand">FallGarden · Live</span>
   <nav class="tabs" aria-label="Views">
     <button id="v-estate" aria-pressed="true">Your estate</button>
-    <button id="v-grow" aria-pressed="false">Grow a company</button>
+    <button id="v-grow" aria-pressed="false">The Living Company</button>
     <button id="v-build" aria-pressed="false">Your build</button>
   </nav>
   <span class="grow"></span>
+  <span class="chip" id="nightchip" hidden title="The nights the library has grown so far, counted from the real night events">night <b id="night">0</b></span>
   <span class="chip" id="hashchip" title="The structure hash of what is on screen. The final one is the receipt CI checks.">hash <b id="hash">…</b></span>
   <span class="chip" id="receiptchip" title="Does the final hash match the receipt GitHub's runner recomputed?">receipt <b id="receipt">…</b></span>
   <a href="../" style="font-family:var(--mono);font-size:11px">← FallGarden</a>
@@ -146,7 +147,7 @@ footer{border-top:1px solid var(--line);padding:18px 16px;color:var(--muted);fon
   <p>A living map of a company that builds itself. It has three views on one engine:</p>
   <ul>
     <li><b>Your estate</b> replays the estate's real public records as a growing graph: <span id="s-repos">…</span> public repos as they were created, <span id="s-links">…</span> couplings, <span id="s-ci">…</span> CI results, Liveware's <span id="s-receipts">…</span> receipts, and the pattern library's real nights. Every node and edge is a record you can open.</li>
-    <li><b>Grow a company</b> plants one seed. fall-core germinates, the organs bud, and every night the pattern library grows through the same gate Kar uses: a rule enters only if it beats a baseline on data it never saw, then passes a second exam. Same seed, same company, every run.</li>
+    <li><b>The Living Company</b> plants one seed. fall-core germinates, the organs bud, and every night the pattern library grows through the same gate Kar uses: a rule enters only if it beats a baseline on data it never saw, then passes a second exam. Same seed, same company, every run.</li>
     <li><b>Your build</b> takes a process you describe and shows how it would run on these organs. It is always labelled a simulation, because it is one.</li>
   </ul>
   <p class="muted">It is a re-runnable computation, not an animation: the final structure has a hash, and GitHub's runner recomputes the same hash on every push.</p>
@@ -159,7 +160,7 @@ footer{border-top:1px solid var(--line);padding:18px 16px;color:var(--muted);fon
     <li>Watch the strip under the graph: every event is also a LIGHT line, the compressed message the organs pass. <b>Click a line</b> to decode it back into plain words; the page checks the decoded message is exactly the one sent.</li>
     <li>Hover a node to see what it is. In <b>Your estate</b>, the panel links to the repo on GitHub.</li>
     <li>Drag the <b>timeline</b> to any moment, or press <b>↺ Re-run</b>. At the end, the <b>hash</b> chip shows the final structure and the <b>receipt</b> chip says whether it matches what CI recomputed.</li>
-    <li>Open <b>Grow a company</b>, pick a seed and play. Gold particles that stay are rules the gate kept. Red ones that fade are rules it dropped, and most are dropped. Organs glow brighter as they climb shadow → draft → assist → autonomous.</li>
+    <li>Open <b>The Living Company</b>, pick a seed and play. Gold particles that stay are rules the gate kept. Red ones that fade are rules it dropped, and most are dropped. Organs glow brighter as they climb shadow → draft → assist → autonomous.</li>
     <li>Open <b>Your build</b>. The example law firm is loaded; press <b>Grow their build</b>, or write your own steps and example cases. Change a step and the hash changes.</li>
   </ol>
 </section>
@@ -182,7 +183,7 @@ footer{border-top:1px solid var(--line);padding:18px 16px;color:var(--muted);fon
   <ol>
     <li><b>Events, never animation.</b> Each view is a list of events (a repo is built, two repos couple, CI turns green, the gate keeps or drops a rule, an organ climbs a stage), and the kernel applies them one at a time. Anything that cannot be applied to real state is counted and never drawn.</li>
     <li><b>Your estate</b> comes from <code>data/estate.json</code>, written by <code>tools/snapshot.mjs</code> from GitHub's own list of public repos. It refuses to write if GitHub reports any of them private. Repo creation dates order the timeline. Kar's estate map supplies families and couplings. Liveware's receipts, recent CI and the pattern library's nights are added, with any rule that names a private word withheld.</li>
-    <li><b>Grow a company</b> runs in a worker in your tab. Each night it samples the public estate, proposes rules (the 12 most precise single words and pairs per family), and runs each through <code>vendor/patlib.mjs</code>, the pattern library's gate, byte for byte. An organ climbs one stage for each kept rule covering its family.</li>
+    <li><b>The Living Company</b> runs in a worker in your tab. Each night it samples the public estate, proposes rules (the 12 most precise single words and pairs per family), and runs each through <code>vendor/patlib.mjs</code>, the pattern library's gate, byte for byte. An organ climbs one stage for each kept rule covering its family.</li>
     <li><b>Your build</b> turns your steps into organs. A step that decides something hands its cases to a gate; your example cases go through the same library gate. Every piece is marked a simulation, and the banner stays on screen while it runs.</li>
     <li><b>The LIGHT stream</b> codes each event's message with LIGHT, using <code>vendor/light-codec.mjs</code> primed with a shared dictionary. Clicking a line decodes the bytes and compares them with the message sent. The counter totals real bytes, LIGHT against JSON.</li>
     <li><b>The layout</b> uses FallGarden's own forces (repulsion 3000/d², springs toward 60, a pull to the centre, 0.85 damping), the same constants its graph view uses. At estate scale the renderer adds a speed limit per step and gives repulsion a reach, so 1,700+ nodes stay on screen. Positions are drawing only; they are never part of the hash.</li>

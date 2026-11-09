@@ -13,7 +13,7 @@ const PRIMED = prime(te.encode(LIGHT_DICT));
 const qs = new URLSearchParams(location.search);
 const VIEWS = {
   estate: { title: 'A company growing itself, and every node is real.', caption: 'My estate, replayed from its public records: every repo a node, every coupling an edge, every CI result and receipt as it happened. Same records, same hash, every run. Press play, or drag the timeline.', speed: 90 },
-  grow: { title: 'One seed. The same company, every time.', caption: 'fall-core germinates, the organs bud, and every night the library grows through the real gate: a rule stays only if it beats a baseline on cases it never saw. Change the seed, get a different company. Same seed, the identical one.', speed: 60 },
+  grow: { title: 'The Living Company', caption: 'A virtual company growing from one seed. Same seed, same company, every run. Every node is a real build. Re-run it. fall-core germinates, the organs bud from the estate’s real layers, and each night the library grows through the real gate: a rule stays only if it beats a baseline on cases it never saw. Each part is proven on Liveware.', speed: 60 },
   build: { title: 'Your build, simulated from your own process.', caption: 'Watch it run before you pay. Your steps become organs; your example cases go through the same gate. Every piece of it is a simulation, and says so.', speed: 24 },
 };
 
@@ -131,6 +131,8 @@ async function setView(view) {
   for (const v of ['estate', 'grow', 'build']) $('v-' + v).setAttribute('aria-pressed', String(v === view));
   $('title').textContent = VIEWS[view].title; $('caption').textContent = VIEWS[view].caption; $('speed').value = String(VIEWS[view].speed);
   $('seedbox').hidden = view !== 'grow';
+  document.title = view === 'grow' ? 'The Living Company · FallGarden Live' : 'FallGarden Live · the estate, running';
+  history.replaceState(null, '', view === 'estate' ? location.pathname : '?view=' + (view === 'grow' ? 'company' : view));
   $('buildform').classList.toggle('on', view === 'build');
   $('banner').style.display = view === 'build' ? 'block' : 'none';
   $('bannertext').textContent = K.BANNER;
@@ -187,6 +189,11 @@ function updateChips(force) {
   const h = K.hashState(S.state);
   $('hash').textContent = h;
   $('stepinfo').textContent = S.k.toLocaleString() + ' / ' + S.events.length.toLocaleString();
+  // the night, counted from the real events: each night begins when Kar hands the day's cases to the gate
+  const nights = S.view === 'grow' ? S.events.slice(0, S.k).filter((e) => e.t === 'flow' && e.a === 'kar' && e.b === 'gate').length : 0;
+  const total = S.view === 'grow' ? S.events.filter((e) => e.t === 'flow' && e.a === 'kar' && e.b === 'gate').length : 0;
+  $('nightchip').hidden = S.view !== 'grow';
+  $('night').textContent = nights + ' / ' + total + ' · ' + S.state.library.kept.length + ' kept · ' + S.state.library.dropped.length.toLocaleString() + ' dropped';
   $('scrub').value = String(S.k);
   const chip = $('receiptchip');
   chip.classList.remove('ok', 'bad');
@@ -358,7 +365,7 @@ async function main() {
   window.__live = { S, K, CPU_CAP };
   wire();
   const v = qs.get('view');
-  await setView(v === 'grow' || v === 'build' ? v : 'estate');
+  await setView(v === 'grow' || v === 'company' ? 'grow' : v === 'build' ? 'build' : 'estate');
   requestAnimationFrame(frame);
 }
 main().catch((e) => { $('engine').textContent = 'the page failed to start: ' + String((e && e.message) || e); console.error(e); });
