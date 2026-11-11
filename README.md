@@ -95,4 +95,4 @@ FallGarden is part of the [AI-Native Solutions](https://ai-nativesolutions.com/)
 Cousins: [fallnote](https://sjgant80-hub.github.io/fallnote/) (blocks), [fallvault](https://sjgant80-hub.github.io/fallvault/) (encrypted backup), [fallmirror](https://sjgant80-hub.github.io/fallmirror/) (self-reflection).
 Substrate: [fall-kit](https://sjgant80-hub.github.io/fall-kit/), [fallsignature](https://sjgant80-hub.github.io/fallsignature/), [fallcast](https://sjgant80-hub.github.io/fallcast/), [fallsync](https://sjgant80-hub.github.io/fallsync/).
 
-MIT · `◊ · κ = 1`
+MIT · ``
