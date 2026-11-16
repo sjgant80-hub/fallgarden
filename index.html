@@ -558,16 +558,16 @@ function md(src, filesSet){
       return `<span class="wikilink${broken}" data-link="${esc(key)}">${esc(disp)}</span>`;
     });
     // tag
-    t = t.replace(/(^|\s)#([a-zA-Z0-9_/-]+)/g,'TBA<span class="tag" data-tag="TBA">#TBA</span>');
+    t = t.replace(/(^|\s)#([a-zA-Z0-9_/-]+)/g,'$1<span class="tag" data-tag="$2">#$2</span>');
     // bold/italic
-    t = t.replace(/\*\*([^\*]+)\*\*/g,'<strong>TBA</strong>');
-    t = t.replace(/\*([^\*]+)\*/g,'<em>TBA</em>');
-    t = t.replace(/__([^_]+)__/g,'<strong>TBA</strong>');
-    t = t.replace(/(^|[^\w])_([^_]+)_/g,'TBA<em>TBA</em>');
+    t = t.replace(/\*\*([^\*]+)\*\*/g,'<strong>$1</strong>');
+    t = t.replace(/\*([^\*]+)\*/g,'<em>$1</em>');
+    t = t.replace(/__([^_]+)__/g,'<strong>$1</strong>');
+    t = t.replace(/(^|[^\w])_([^_]+)_/g,'$1<em>$2</em>');
     // strikethrough
-    t = t.replace(/~~([^~]+)~~/g,'<del>TBA</del>');
+    t = t.replace(/~~([^~]+)~~/g,'<del>$1</del>');
     // markdown link (plain)
-    t = t.replace(/\[([^\]]+)\]\(([^)]+)\)/g,'<a href="TBA" target="_blank" rel="noopener">TBA</a>');
+    t = t.replace(/\[([^\]]+)\]\(([^)]+)\)/g,'<a href="$2" target="_blank" rel="noopener">$1</a>');
     // task
     t = t.replace(/^\[( |x|X)\]\s*/, m=>`<input type="checkbox" disabled${/x/i.test(m)?' checked':''}>`);
     return t;
@@ -1039,7 +1039,7 @@ function runFullText(q){
     for(const t of terms){ const i = lc.indexOf(t); if (i>=0 && (idx<0 || i<idx)) idx = i; }
     if (idx<0) idx = 0;
     const raw = rec.body.slice(Math.max(0,idx-40), idx+180).replace(/\n/g,' ');
-    const snip = esc(raw).replace(highlightRx,'<mark>TBA</mark>');
+    const snip = esc(raw).replace(highlightRx,'<mark>$1</mark>');
     const d = el('div','hit');
     d.innerHTML = `<div class="path">${esc(p)}</div><div class="snip">…${snip}…</div>`;
     d.onclick = () => { openFile(p); switchPane('editor'); };
